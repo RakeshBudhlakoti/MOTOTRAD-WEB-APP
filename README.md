@@ -146,21 +146,31 @@ Make sure you have the following installed locally:
 
 ---
 
-## 🛡️ Critical Engine Rules
+## 🌟 Core Bidding & Commerce Features
 
-### 1. Dynamic System Admin Email (Source of Truth)
-Administrative alerts are **never hardcoded**. All system-generated administrative notifications (completed auctions, cash settlements, contact forms, outbids) resolve the recipient email dynamically using a robust database cascading fallback:
-1.  **`Settings.admin_email`** (configured directly in the Admin Panel settings).
-2.  **`Settings.support_email`** (general support address fallback).
-3.  **`Settings.email_from_address`** (system mailer sender fallback).
-4.  **`admin@mototrad.com`** (static fallback recovery).
+Mototrad 2.0 provides a premium, highly secure, and seamless auction experience. The core bidding and transaction flow is designed for high reliability, trust, and real-time responsiveness:
 
-To quickly inspect what address your settings currently resolve to, navigate to the `backend-api` and run:
-```bash
-node check_admin_email.js
-```
+### 🔨 1. Dynamic Bidding Engine
+High-fidelity bidding functionality built on top of real-time event distribution.
+*   **Real-time WebSocket Synchronization**: Every bid is dispatched instantly to all active browsers using low-latency Socket.io channels, displaying live updates without requiring manual refresh.
+*   **Smart Bid Increments**: Dynamic enforcement of minimum bidding steps based on the vehicle's current price bracket.
+*   **Sniper Protection (Auto-Extension)**: If a bid is placed in the final minutes (configurable via the Admin Panel), the system automatically extends the auction duration by a predefined increment (e.g., 2 minutes) to ensure fair competition.
+*   **Immediate Notifications**: Outbid alerts are immediately dispatched to previous high bidders via email and push channels, prompting active re-engagement.
 
-### 2. Bulletproof Auction Expiry Validation
-Frontend countdown timers are decorative. The backend API is the absolute source of truth.
-*   **Bids and Buy Nows** are strictly blocked the instant the timestamp passes `endTime` (returns code `AUCTION_EXPIRED` with `403 Forbidden`).
-*   **Auto Extension (Sniper Protection)**: If a bid is placed in the final minutes (dynamic setting), the `endTime` is automatically extended by a set increment.
+### ⚡ 2. Instant "Buy Now" Checkout
+Direct purchasing capability to secure high-value vehicles instantly.
+*   **Bypass the Cycle**: Buyers can completely bypass the bidding cycle by purchasing a vehicle outright at its designated "Buy Now" price.
+*   **Instant Catalog Lockout**: Once "Buy Now" is triggered, the system instantly suspends active bidding, flags the vehicle as sold, and marks other concurrent bids as archived.
+*   **Fulfillment Generation**: Instantly generates an order sheet and draft invoices for both the buyer and administrative operators.
+
+### 💳 3. Secure Deposit & Payment Gateways
+Enforces bidder commitment and handles secure transaction processing.
+*   **Bidding Deposit Pre-authorization**: To maintain platform integrity and filter out non-serious bidders, users are required to authorize a pre-set security deposit (e.g., via Stripe or PayPal) before placing their first bid.
+*   **Flexible Gateway Support**: Seamless support for credit cards, digital wallets, and bank/wire transfers.
+*   **Installments & Invoicing**: Structured payment timelines for vehicle balance settlement, including automatic fee calculation and dynamic tax calculation.
+
+### 🏆 4. Auction Winner & Checkout Flow
+A dedicated post-auction workflow for securing the asset transition.
+*   **Automated Winner Resolution**: The instant an auction closes, the system locks the database record, resolves the highest bid, updates the vehicle status to `CLOSED`, and assigns the winning bidder.
+*   **Winner Workspace Portal**: Winners gain access to a secure checkout portal, enabling them to complete document submissions, coordinate delivery logistics, and pay the remaining balance.
+*   **Operator Dashboard Oversight**: Backoffice admins can track receipt uploads, verify bank payments, approve shipping statuses, and issue final release documentation.
