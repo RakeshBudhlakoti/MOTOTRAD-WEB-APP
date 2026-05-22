@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; padding: 0; background-color: #F8FAFC; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 60px; padding-top: 60px; }
+        .main { background-color: #FFFFFF; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #bdbdbd; }
+        .header { padding: 40px 0; text-align: center; background-color: #FFFFFF; }
+        .content { padding: 0 50px 40px 50px; text-align: center; }
+        .icon-circle { width: 70px; height: 70px; background-color: #10B981; border-radius: 50%; display: inline-block; margin-bottom: 25px; text-align: center; line-height: 70px; }
+        h1 { color: #111111; font-size: 24px; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: -0.5px; }
+        p { color: #64748B; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; font-weight: 500; text-align: left; }
+        .ledger-box { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 25px; margin-bottom: 25px; text-align: left; }
+        .ledger-title { color: #0F172A; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #E2E8F0; padding-bottom: 10px; }
+        .footer { padding: 30px 50px; text-align: center; background-color: #FDFDFD; border-top: 1px solid #F1F5F9; }
+        .footer-text { color: #94A3B8; font-size: 12px; margin: 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="{{logoUrl}}" alt="Mototrad" width="140" style="display: block; margin: 0 auto;">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <div class="icon-circle">
+                        <img src="https://img.icons8.com/ios-filled/35/ffffff/delivery.png" style="vertical-align: middle; padding-top: 17px;">
+                    </div>
+                    <h1>Delivery Confirmed!</h1>
+                    <p>Dear {{buyerName}},</p>
+                    <p>We are excited to inform you that your item <strong>{{vehicleTitle}}</strong> (Order <strong>{{orderNumber}}</strong>) has been successfully delivered and handed over!</p>
+                    
+                    <div class="ledger-box">
+                        <div class="ledger-title">Handover Details</div>
+                        <table width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="padding: 6px 0; font-size: 14px; color: #64748B; font-weight: 600;">Delivery Date:</td>
+                                <td style="padding: 6px 0; font-size: 14px; color: #0F172A; font-weight: 800; text-align: right;">{{dateDelivered}}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 0; font-size: 14px; color: #64748B; font-weight: 600;">Handed Over To:</td>
+                                <td style="padding: 6px 0; font-size: 14px; color: #0F172A; font-weight: 800; text-align: right;">
+                                    {{#if isRepresentative}}
+                                        Authorized Representative
+                                    {{else}}
+                                        Bidder (Self)
+                                    {{/if}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 0; font-size: 14px; color: #64748B; font-weight: 600;">Receiver Name:</td>
+                                <td style="padding: 6px 0; font-size: 14px; color: #0F172A; font-weight: 800; text-align: right;">{{receiverName}}</td>
+                            </tr>
+                            {{#if receiverPhone}}
+                            <tr>
+                                <td style="padding: 6px 0; font-size: 14px; color: #64748B; font-weight: 600;">Receiver Contact:</td>
+                                <td style="padding: 6px 0; font-size: 14px; color: #0F172A; font-weight: 800; text-align: right;">{{receiverPhone}}</td>
+                            </tr>
+                            {{/if}}
+                        </table>
+                    </div>
+
+                    <p>Thank you for choosing Mototrad. We trust you will enjoy your new asset. If you have any questions or require assistance, our support team is always here to help.</p>
+
+                    <p style="font-size: 14px; color: #111111; font-weight: 800; margin-bottom: 5px; text-align: left;">Best regards,</p>
+                    <p style="font-size: 14px; color: #10B981; font-weight: 800; text-align: left;">The Mototrad Team</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p class="footer-text">&copy; {{year}} Mototrad Marketplace. All rights reserved.</p>
+                    <p class="footer-text" style="margin-top: 5px;">Dubai, United Arab Emirates</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

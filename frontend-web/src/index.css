@@ -1,0 +1,121 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,100..900,0..100&display=swap");
+
+:root {
+    --primary-color: #D32F2F;
+    --primary-hover: #B71C1C;
+    --accent-orange: #FF9800;
+    --accent-hover: #F57C00;
+    --accent-green: #4CAF50;
+    --bg-white: #FFFFFF;
+    --bg-light: #F7F9FC;
+    --bg-dark: #121212;
+    --text-dark: #1C1E21;
+    --text-gray: #606770;
+    --border-color: #E4E6EB;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 8px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 50px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    line-height: 1.6;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+}
+.btn-primary { 
+    background-color: var(--primary-color); 
+    color: white; 
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); 
+}
+.btn-primary:hover { 
+    background-color: var(--primary-hover); 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4); 
+    color: white;
+}
+
+/* Navbar Redux */
+.navbar-premium {
+    position: sticky; top: 0; background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color);
+    z-index: 1000; padding: 15px 0;
+}
+
+/* Parallax Hero Redux */
+.parallax-hero-premium {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-image: url('/assets/design/hero_auction_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    margin-bottom: 35px;
+}
+.parallax-hero-premium::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 1;
+}
+
+.hero-headline-premium {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+    text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+    line-height: 1.1;
+}
+
+/* Category Grid Redux */
+.category-card-premium {
+    border-radius: var(--radius-lg);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 450px;
+    display: flex;
+    align-items: flex-end;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow-sm);
+}
+.category-card-premium:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-overlay-premium {
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+    width: 100%;
+    padding: 40px 30px 30px;
+    color: white;
+}

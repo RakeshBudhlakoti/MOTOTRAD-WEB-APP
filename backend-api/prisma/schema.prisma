@@ -1,0 +1,799 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// 1-3. Users, Roles & Permissions
+// =======================
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  username     String?        @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  phone        String?        @unique
+  avatar       String?
+  status       UserStatus     @default(INACTIVE)
+  roleId           String
+  role             Role           @relation(fields: [roleId], references: [id])
+  
+  isEmailVerified  Boolean        @default(false)
+  verificationToken String?
+  verificationTokenExpires DateTime?
+  refreshTokenHash String?
+  resetTokenHash   String?
+  resetTokenExpires DateTime?
+  
+  sellerProfile    SellerProfile?
+  bids             Bid[]
+  orders           Order[]        @relation("BuyerOrders")
+  notifications    Notification[]
+  watchlists       Watchlist[]
+  auctionExtensions AuctionExtension[]
+  auditLogs        AuditLog[]
+  auctionsWon      Auction[]      @relation("HighestBidder")
+  auctionsWonDirect Auction[]     @relation("AuctionWinner")
+
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+  lastLoginAt  DateTime?
+
+  isProMember      Boolean        @default(false)
+  membershipStatus MembershipStatus @default(NONE)
+  membershipExpiry DateTime?
+  
+  subscriptions    Subscription[]
+  subscriptionPayments SubscriptionPayment[]
+  soldOutProducts  Product[]      @relation("SoldOutProducts")
+
+  @@index([email])
+  @@index([status])
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+  DELETED
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  users       User[]
+  permissions RolePermission[]
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  action      String
+  resource    String
+  description String?
+  roles       RolePermission[]
+
+  @@unique([action, resource])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// =======================
+// 4-5. Seller Profiles & KYC
+// =======================
+
+model SellerProfile {
+  id              String      @id @default(uuid())
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName     String?
+  taxId           String?
+  businessAddress String?
+  rating          Decimal     @default(0.0) @db.Decimal(3, 2)
+  isVerified      Boolean     @default(false)
+  kyc             SellerKyc?
+  products        Product[]
+  orders          Order[]     @relation("SellerOrders")
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+}
+
+model SellerKyc {
+  id                 String        @id @default(uuid())
+  sellerId           String        @unique
+  seller             SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  documentType       KycDocType
+  documentUrl        String
+  idNumber           String
+  verificationStatus KycStatus     @default(PENDING)
+  rejectionReason    String?
+  verifiedAt         DateTime?
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+enum KycDocType {
+  PASSPORT
+  NATIONAL_ID
+  DRIVERS_LICENSE
+  BUSINESS_REGISTRATION
+}
+
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// =======================
+// 6-9. Catalog & Dynamic Attributes
+// =======================
+
+model Category {
+  id          String              @id @default(uuid())
+  parentId    String?
+  parent      Category?           @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[]          @relation("CategoryToCategory")
+  name        String
+  slug        String              @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean             @default(true)
+  attributes  CategoryAttribute[]
+  products    Product[]
+
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  deletedAt   DateTime?
+
+  @@index([parentId])
+}
+
+// =======================
+// Basket (Event/Location grouping for products)
+// =======================
+
+model Basket {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  isActive    Boolean   @default(true)
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model CategoryAttribute {
+  id         String                  @id @default(uuid())
+  categoryId String
+  category   Category                @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name       String
+  type       AttrType
+  isRequired Boolean                 @default(false)
+  options    Json?
+  values     ProductAttributeValue[]
+
+  @@unique([categoryId, name])
+}
+
+enum AttrType {
+  STRING
+  NUMBER
+  BOOLEAN
+  ENUM
+}
+
+model Product {
+  id              String                  @id @default(uuid())
+  sellerId        String
+  seller          SellerProfile           @relation(fields: [sellerId], references: [id])
+  categoryId      String
+  category        Category                @relation(fields: [categoryId], references: [id])
+  basketId        String?
+  basket          Basket?                 @relation(fields: [basketId], references: [id])
+  title           String
+  slug            String?                 @unique
+  sku             String                  @unique
+  shortDescription String?
+  description     String
+  quantity        Int                     @default(1)
+  isFeatured      Boolean                 @default(false)
+  condition       ItemCondition
+  basePrice       Decimal?                @db.Decimal(12, 2)
+  status          ProductStatus           @default(DRAFT)
+  media           ProductMedia[]
+  attributeValues ProductAttributeValue[]
+  auctions        Auction[]
+
+  isSoldOut       Boolean                 @default(false)
+  soldOutAt       DateTime?
+  soldOutBy       String?
+  soldOutByUser   User?                   @relation("SoldOutProducts", fields: [soldOutBy], references: [id])
+
+  buyNowDisabled       Boolean                 @default(false)
+  buyNowDisabledReason String?
+
+  useGlobalCommission  Boolean         @default(true)
+  commissionEnabled    Boolean         @default(false)
+  commissionType       CommissionType  @default(NONE)
+  commissionAmount     Decimal?        @db.Decimal(15, 2)
+  minCommissionAmount  Decimal?        @db.Decimal(15, 2)
+  maxCommissionAmount  Decimal?        @db.Decimal(15, 2)
+  
+  useGlobalUpfrontPayment Boolean      @default(true)
+  upfrontPaymentPercentage Decimal?    @db.Decimal(5, 2)
+
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  deletedAt       DateTime?
+
+  @@index([sellerId])
+  @@index([categoryId])
+  @@index([basketId])
+  @@index([status])
+}
+
+enum ItemCondition {
+  NEW
+  LIKE_NEW
+  USED_GOOD
+  USED_FAIR
+  REFURBISHED
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  IN_AUCTION
+  SOLD
+  UNAVAILABLE
+}
+
+model ProductMedia {
+  id        String    @id @default(uuid())
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  mediaType MediaType @default(IMAGE)
+  isPrimary Boolean   @default(false)
+  sortOrder Int       @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([productId])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+model ProductAttributeValue {
+  id          String            @id @default(uuid())
+  productId   String
+  product     Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   CategoryAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  value       String
+
+  @@unique([productId, attributeId])
+}
+
+// =======================
+// 10-12. Auctions, Bids & Extensions
+// =======================
+
+model Auction {
+  id              String             @id @default(uuid())
+  productId       String
+  product         Product            @relation(fields: [productId], references: [id])
+  status          AuctionStatus      @default(PENDING)
+  startingBid     Decimal            @db.Decimal(15, 2)
+  reservePrice    Decimal?           @db.Decimal(15, 2)
+  buyItNowPrice   Decimal?           @db.Decimal(15, 2)
+  bidIncrement    Decimal            @db.Decimal(15, 2)
+  startTime       DateTime
+  endTime         DateTime
+  currentBid      Decimal            @default(0) @db.Decimal(15, 2)
+  highestBidderId String?
+  highestBidder   User?              @relation("HighestBidder", fields: [highestBidderId], references: [id])
+  bidCount        Int                @default(0)
+  extensionCount  Int                @default(0)
+  lastBidAt       DateTime?
+  bids            Bid[]
+  extensions      AuctionExtension[]
+  order           Order?
+  watchlists      Watchlist[]
+
+  winnerUserId    String?
+  winnerUser      User?              @relation("AuctionWinner", fields: [winnerUserId], references: [id])
+  winningBidId    String?            @unique
+  winningBid      Bid?               @relation("AuctionWinningBid", fields: [winningBidId], references: [id])
+  endedAt         DateTime?
+
+  type            AuctionType        @default(BID_ONLY)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
+
+  @@index([status, endTime])
+  @@index([status, startTime])
+  @@index([productId])
+  @@index([highestBidderId])
+}
+
+enum AuctionType {
+  BID_ONLY
+  BUY_NOW_ONLY
+  BID_AND_BUY
+}
+
+enum AuctionStatus {
+  PENDING
+  ACTIVE
+  ENDED_SOLD
+  ENDED_UNSOLD
+  CANCELLED
+  COMPLETED
+  EXPIRED
+}
+
+
+model Bid {
+  id        String    @id @default(uuid())
+  auctionId String
+  auction   Auction   @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount        Decimal   @db.Decimal(15, 2)
+  isAutoBid     Boolean   @default(false)
+  isHighestBid  Boolean   @default(false)
+  status        BidStatus @default(VALID)
+  winningAuctions Auction? @relation("AuctionWinningBid")
+
+
+  createdAt DateTime  @default(now())
+
+  @@index([auctionId, status, amount(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+enum BidStatus {
+  VALID
+  OUTBID
+  RETRACTED
+  WINNING
+}
+
+model AuctionExtension {
+  id              String   @id @default(uuid())
+  auctionId       String
+  auction         Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  extendedBySecs  Int
+  reason          String?
+  previousEndTime DateTime
+  newEndTime      DateTime
+  createdAt       DateTime @default(now())
+
+  @@index([auctionId])
+}
+
+// =======================
+// 13-14. Orders & Payments
+// =======================
+
+model Order {
+  id          String      @id @default(uuid())
+  auctionId   String      @unique
+  auction     Auction     @relation(fields: [auctionId], references: [id])
+  buyerId     String
+  buyer       User        @relation(fields: [buyerId], references: [id], name: "BuyerOrders")
+  sellerId    String
+  seller      SellerProfile @relation(fields: [sellerId], references: [id], name: "SellerOrders")
+  orderNumber String      @unique
+  totalAmount Decimal     @db.Decimal(15, 2)
+  baseAmount  Decimal     @default(0) @db.Decimal(15, 2)
+  commissionAmount Decimal @default(0) @db.Decimal(15, 2)
+  commissionType   CommissionType @default(NONE)
+  commissionRate   Decimal     @default(0) @db.Decimal(15, 2)
+  finalAmount      Decimal @default(0) @db.Decimal(15, 2)
+  taxAmount   Decimal     @default(0) @db.Decimal(15, 2)
+  feeAmount   Decimal     @default(0) @db.Decimal(15, 2)
+  status      OrderStatus @default(PENDING_PAYMENT)
+  adminRemarks String?    @db.Text
+  payments    Payment[]
+  shipping    Shipping?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+
+  @@index([buyerId, status])
+  @@index([sellerId, status])
+  @@index([auctionId])
+  @@index([orderNumber])
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  DEPOSIT_PAID
+  PARTIALLY_PAID
+  FULLY_PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  orderId       String
+  order         Order           @relation(fields: [orderId], references: [id])
+  transactionId String?         @unique
+  provider      PaymentProvider
+  amount        Decimal         @db.Decimal(15, 2)
+  currency      String          @default("USD")
+  status        PaymentStatus   @default(PENDING)
+  paymentType   PaymentType     @default(FULL)
+  paymentMethod String?
+  commissionAmount Decimal      @default(0) @db.Decimal(15, 2)
+  finalAmount      Decimal      @default(0) @db.Decimal(15, 2)
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+}
+
+enum PaymentType {
+  DEPOSIT
+  FULL
+  BALANCE
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  BANK_TRANSFER
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// =======================
+// 22-23. Shipping & Tracking
+// =======================
+
+model Shipping {
+  id                String          @id @default(uuid())
+  orderId           String          @unique
+  order             Order           @relation(fields: [orderId], references: [id])
+  shippingMethod    String
+  trackingNumber    String?
+  carrier           String?
+  estimatedDelivery DateTime?
+  status            ShippingStatus  @default(PENDING)
+  shippingAddress   Json
+  trackings         TrackingEvent[]
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+enum ShippingStatus {
+  PENDING
+  DISPATCHED
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  EXCEPTION
+}
+
+model TrackingEvent {
+  id          String   @id @default(uuid())
+  shippingId  String
+  shipping    Shipping @relation(fields: [shippingId], references: [id], onDelete: Cascade)
+  location    String?
+  description String
+  eventDate   DateTime
+
+  createdAt   DateTime @default(now())
+
+  @@index([shippingId])
+}
+
+// =======================
+// 15-16. Notifications & Emails
+// =======================
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  actionUrl String?
+  data      Json?
+
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead, createdAt(sort: Desc)])
+}
+
+enum NotificationType {
+  SYSTEM
+  AUCTION_UPDATE
+  BID_OUTBID
+  BID_PLACED
+  ORDER_STATUS
+  PAYMENT_STATUS
+  MEMBERSHIP
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  subject   String
+  bodyHtml  String
+  variables String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =======================
+// 17-18. CMS & Banners
+// =======================
+
+model CmsPage {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  title       String
+  contentHtml String
+  isPublished Boolean   @default(false)
+  metaTitle   String?
+  metaDesc    String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+model Banner {
+  id        String    @id @default(uuid())
+  title     String
+  imageUrl  String
+  targetUrl String?
+  position  String
+  isActive  Boolean   @default(true)
+  startDate DateTime?
+  endDate   DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Page {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  content        String   @db.Text
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  isActive       Boolean  @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Faq {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String   @db.Text
+  category  String?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =======================
+// 19-21. Audit, Reports & Settings
+// =======================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String?
+  entityId   String?
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent  String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+}
+
+model Report {
+  id          String       @id @default(uuid())
+  name        String
+  type        ReportType
+  parameters  Json?
+  fileUrl     String?
+  status      ReportStatus @default(PENDING)
+  generatedBy String?
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum ReportType {
+  SALES
+  USER_ACTIVITY
+  FINANCIAL
+  INVENTORY
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  isPublic    Boolean  @default(false)
+
+  updatedAt   DateTime @updatedAt
+}
+
+// =======================
+// 24. Watchlist
+// =======================
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, auctionId])
+}
+
+// =======================
+// 25. Subscriptions & Membership
+// =======================
+
+model Subscription {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  planId          String           @default("PRO_MONTHLY")
+  status          SubscriptionStatus @default(INACTIVE)
+  startDate       DateTime         @default(now())
+  endDate         DateTime?
+  paypalSubscriptionId String?     @unique
+  
+  payments        SubscriptionPayment[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model SubscriptionPayment {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  subscriptionId  String?
+  subscription    Subscription?    @relation(fields: [subscriptionId], references: [id])
+  amount          Decimal          @db.Decimal(10, 2)
+  currency        String           @default("USD")
+  status          PaymentStatus    @default(PENDING)
+  paypalOrderId   String?          @unique
+  paypalCaptureId String?          @unique
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+enum MembershipStatus {
+  NONE
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  INACTIVE
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+enum CommissionType {
+  FLAT
+  PERCENTAGE
+  NONE
+}
+
+model ContactInquiry {
+  id          String        @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  message     String        @db.Text
+  status      ContactStatus @default(UNREAD)
+  adminReply  String?       @db.Text
+  repliedBy   String?
+  repliedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  REPLIED
+  CLOSED
+}

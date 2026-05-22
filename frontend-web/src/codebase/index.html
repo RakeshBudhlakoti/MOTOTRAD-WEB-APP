@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mototrad - High-End Auctions</title>
+    <meta name="description" content="Mototrad is a premium online auction platform for vintage cars, luxury watches, gemstones, and motorcycles.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="https://mototrad.com/assets/dist/img/mototrad-logo-cropped.jpg" alt="Mototrad Logo" class="logo-img">
+                <span class="tagline">Buy Ride or Revive</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showCategories()">Live Auctions</a></li>
+                <li><a href="#" onclick="showCategories()">Categories</a></li>
+                <li><a href="#sell">Sell with Us</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-primary">Log in / Sign up</a>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Parallax Hero Section -->
+    <header class="hero parallax-hero">
+        <div class="container hero-container">
+            <h2 class="hero-headline">Buy, Ride or Revive</h2>
+            <p class="hero-subheadline">Discover and bid on the world's most coveted vintage cars, luxury timepieces, fine gemstones, and premium motorcycles.</p>
+            <div class="hero-search">
+                <input type="text" placeholder="Search for any product...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Latest Auctions Section -->
+        <section id="latest-auctions" class="latest-auctions">
+            <div class="container">
+                <div class="section-title-center">
+                    <h2>LATEST AUCTIONS</h2>
+                    <div class="title-separator">
+                        <span class="line"></span>
+                        <i class="fas fa-gavel"></i>
+                        <span class="line"></span>
+                    </div>
+                </div>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="car_sold.png" alt="1967 Mustang Fastback" onerror="this.src='https://via.placeholder.com/300x200?text=Mustang'">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                            <span class="badge new-badge">New</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>1967 Mustang Fastback</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 04:12:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$125,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_moto_1.png" alt="Ducati Superleggera V4" onerror="this.src='https://via.placeholder.com/300x200?text=Ducati'">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                            <span class="badge hot-badge">Hot</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>Ducati Superleggera V4</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 22:15:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$95,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_watch_1.png" alt="Rolex Daytona Platinum" onerror="this.src='https://via.placeholder.com/300x200?text=Rolex'">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Rolex Daytona Platinum</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 01:20:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$85,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="car_project.png" alt="Porsche 356 Project" onerror="this.src='https://via.placeholder.com/300x200?text=Porsche'">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Porsche 356 Project</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 12:45:30 left</div>
+                            <div class="bid-price">Current Bid: <strong>$45,500</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories View -->
+        <section id="categories-view" class="premium-categories">
+            <div class="container">
+                <div class="section-title-center">
+                    <h2>UPCOMING AUCTIONS</h2>
+                    <div class="title-separator">
+                        <span class="line"></span>
+                        <i class="fas fa-gavel"></i>
+                        <span class="line"></span>
+                    </div>
+                </div>
+                <div class="categories-grid">
+                    
+                    <!-- Category 1: Vintage Cars -->
+                    <div class="category-card" onclick="showProducts('vintage', 'Vintage Car Auctions - Los Angeles')" style="background-image: url('cat_vintage.png');">
+                        <div class="category-overlay">
+                            <span class="location"><i class="fas fa-map-marker-alt"></i> Los Angeles, CA</span>
+                            <h2>Vintage Cars</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                    <!-- Category 2: Luxury Watches -->
+                    <div class="category-card" onclick="showProducts('watch', 'Luxury Watch Auctions - Miami')" style="background-image: url('cat_watch.png');">
+                        <div class="category-overlay">
+                            <span class="location"><i class="fas fa-map-marker-alt"></i> Miami, FL</span>
+                            <h2>Luxury Watches</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                    <!-- Category 3: Gemstone Auctions -->
+                    <div class="category-card" onclick="showProducts('gemstone', 'Gemstone Auctions - New York')" style="background-image: url('cat_gemstone.png');">
+                        <div class="category-overlay">
+                            <span class="location"><i class="fas fa-map-marker-alt"></i> New York, NY</span>
+                            <h2>Gemstones</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                    <!-- Category 4: Motorcycle Auctions -->
+                    <div class="category-card" onclick="showProducts('motorcycle', 'Motorcycle Auctions - California')" style="background-image: url('cat_motorcycle.png');">
+                        <div class="category-overlay">
+                            <span class="location"><i class="fas fa-map-marker-alt"></i> California</span>
+                            <h2>Motorcycles</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                    <!-- Category 5: Handicrafts -->
+                    <div class="category-card" onclick="showProducts('handicrafts', 'Handicrafts Auctions - Florida')" style="background-image: url('cat_handicrafts.png');">
+                        <div class="category-overlay">
+                            <div>
+                                <span class="location"><i class="fas fa-map-marker-alt"></i> Florida</span>
+                                <span class="location" style="margin-left: 10px;"><i class="far fa-calendar-alt"></i> May 15 - May 25</span>
+                            </div>
+                            <h2>Handicrafts</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                    <!-- Category 6: Electrical Appliances -->
+                    <div class="category-card" onclick="showProducts('appliances', 'Electrical Appliances Auctions - New Jersey')" style="background-image: url('cat_appliances.png');">
+                        <div class="category-overlay">
+                            <div>
+                                <span class="location"><i class="fas fa-map-marker-alt"></i> New Jersey</span>
+                                <span class="location" style="margin-left: 10px;"><i class="far fa-calendar-alt"></i> May 30 - Jun 18</span>
+                            </div>
+                            <h2>Electrical Appliances</h2>
+                            <span class="btn btn-outline-white mt-3">View Auctions</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Products View (Hidden by Default) -->
+        <section id="products-view" class="premium-categories" style="display: none;">
+            <div class="container">
+                <div class="view-header">
+                    <button class="btn btn-secondary back-btn" onclick="showCategories()"><i class="fas fa-arrow-left"></i> Back to Categories</button>
+                    <h2 id="dynamic-category-title" class="section-title">Auctions</h2>
+                </div>
+                
+                <!-- Vintage Cars Products -->
+                <div class="products-grid" id="products-vintage" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="car_sold.png" alt="1967 Mustang Fastback">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>1967 Mustang Fastback</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 04:12:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$125,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="car_project.png" alt="Porsche 356 Project">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Porsche 356 Project</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 12:45:30 left</div>
+                            <div class="bid-price">Current Bid: <strong>$45,500</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Luxury Watches Products -->
+                <div class="products-grid" id="products-watch" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_watch_1.png" alt="Rolex Daytona Platinum">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Rolex Daytona Platinum</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 01:20:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$85,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_watch_2.png" alt="Patek Philippe Nautilus">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Patek Philippe Nautilus</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 05:10:15 left</div>
+                            <div class="bid-price">Current Bid: <strong>$110,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gemstones Products -->
+                <div class="products-grid" id="products-gemstone" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_gem_1.png" alt="5ct Blue Sapphire">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>5ct Blue Sapphire</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 08:00:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$22,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_gem_2.png" alt="Flawless 2ct Diamond">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Flawless 2ct Diamond</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 02:30:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$35,500</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motorcycles Products -->
+                <div class="products-grid" id="products-motorcycle" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_moto_1.png" alt="Ducati Superleggera V4">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Ducati Superleggera V4</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 22:15:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$95,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="item_moto_2.png" alt="Custom Chopper Build">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Custom Chopper Build</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 14:00:00 left</div>
+                            <div class="bid-price">Current Bid: <strong>$18,000</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Handicrafts Products Placeholder -->
+                <div class="products-grid" id="products-handicrafts" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="cat_handicrafts.png" alt="Handicrafts Assortment">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Premium Handcrafted Ceramics</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 5 Days left</div>
+                            <div class="bid-price">Starting Bid: <strong>$1,200</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electrical Appliances Products Placeholder -->
+                <div class="products-grid" id="products-appliances" style="display: none;">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="cat_appliances.png" alt="Electrical Appliances">
+                            <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <h3>High-end Espresso Machine</h3>
+                            <div class="bid-timer"><i class="far fa-clock"></i> 14 Days left</div>
+                            <div class="bid-price">Starting Bid: <strong>$2,500</strong></div>
+                            <a href="product.html" class="btn btn-primary btn-block mt-3">Bid or Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact-us" class="contact-us">
+            <div class="container">
+                <div class="section-title-center">
+                    <h2>CONTACT US</h2>
+                    <div class="title-separator">
+                        <span class="line"></span>
+                        <i class="fas fa-gavel"></i>
+                        <span class="line"></span>
+                    </div>
+                    <p style="color: var(--text-gray); font-size: 1.1rem; margin-top: 15px;">Have questions? We'd love to hear from you.</p>
+                </div>
+                <div class="contact-wrapper">
+                    <div class="contact-map">
+                        <img src="us_delivery_map.png" alt="Nationwide Delivery Map">
+                        <div class="map-info">
+                            <h3>Nationwide Delivery</h3>
+                            <p>We securely deliver premium vehicles and assets everywhere across the United States.</p>
+                        </div>
+                    </div>
+                    <div class="contact-container">
+                        <form class="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" placeholder="John">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" placeholder="Doe">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" placeholder="How can we help?">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" rows="5" placeholder="Write your message here..."></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block mt-3">Send Message</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="https://mototrad.com/assets/dist/img/mototrad-logo-cropped.jpg" alt="Mototrad Logo" style="height: 30px; margin-bottom: 15px; opacity: 0.8; filter: grayscale(100%) brightness(200%);">
+                    <p>Premium Auctions Worldwide</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact Support</a>
+                </div>
+                <div class="footer-contact">
+                    <h4 style="color: white; margin-bottom: 15px; font-weight: 600;">Contact Us</h4>
+                    <p style="color: #A0AAB2; margin-bottom: 8px; display: flex; align-items: center;"><i class="fas fa-phone" style="margin-right: 10px; color: var(--primary-color);"></i>(760) 401 4871</p>
+                    <p style="color: #A0AAB2; display: flex; align-items: center;"><i class="fas fa-envelope" style="margin-right: 10px; color: var(--primary-color);"></i>partsthief1@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mototrad. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showProducts(categoryId, categoryTitle) {
+            // Hide categories view
+            document.getElementById('categories-view').style.display = 'none';
+            
+            // Show products view
+            document.getElementById('products-view').style.display = 'block';
+            
+            // Update title
+            document.getElementById('dynamic-category-title').innerText = categoryTitle;
+            
+            // Hide all product grids
+            const grids = document.querySelectorAll('.products-grid');
+            grids.forEach(grid => grid.style.display = 'none');
+            
+            // Show specific product grid
+            document.getElementById('products-' + categoryId).style.display = 'grid';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showCategories() {
+            // Hide products view
+            document.getElementById('products-view').style.display = 'none';
+            
+            // Show categories view
+            document.getElementById('categories-view').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

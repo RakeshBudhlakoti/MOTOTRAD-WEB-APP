@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1967 Mustang Fastback - Mototrad</title>
+    <meta name="description" content="Bid on the 1967 Mustang Fastback on Mototrad. Premium vintage car auction.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Specific Styles for Product Detail Page */
+        .product-page {
+            padding: 40px 0;
+            background-color: var(--bg-light);
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        .breadcrumb a {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Image Gallery */
+        .product-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .main-image {
+            width: 100%;
+            height: 500px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+        }
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .thumbnail-list {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .thumbnail {
+            width: 100px;
+            height: 75px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            border: 2px solid transparent;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Product Info */
+        .product-info-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        .product-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .product-meta {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .product-meta span {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Countdown Timer */
+        .auction-timer {
+            background-color: #FFF3E0; /* Light orange */
+            border: 1px solid #FFE0B2;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .timer-title {
+            color: var(--accent-orange);
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        .countdown {
+            display: flex;
+            gap: 15px;
+        }
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .time-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            padding: 10px 15px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            min-width: 60px;
+            text-align: center;
+        }
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Pricing & Bidding */
+        .bidding-section {
+            margin-bottom: 30px;
+        }
+        .current-bid {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+        .current-bid strong {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .bid-action {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .bid-input-group {
+            display: flex;
+            flex-grow: 1;
+            position: relative;
+        }
+        .bid-input-group span {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .bid-input {
+            width: 100%;
+            padding: 12px 15px 12px 35px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .bid-input:focus {
+            border-color: var(--primary-color);
+        }
+        .btn-bid {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: var(--radius-md);
+            white-space: nowrap;
+        }
+
+        .buy-now-box {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .buy-now-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+        
+        /* Tabs Section */
+        .product-tabs {
+            margin-top: 50px;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .tab-headers {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: #F9FAFB;
+        }
+        .tab-btn {
+            padding: 20px 30px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: var(--bg-white);
+        }
+        .tab-btn:hover:not(.active) {
+            color: var(--text-dark);
+        }
+        .tab-content {
+            padding: 30px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .description-text p {
+            margin-bottom: 15px;
+            color: #4B5563;
+        }
+        
+        @media (max-width: 992px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-image {
+                height: 400px;
+            }
+        }
+        @media (max-width: 768px) {
+            .bid-action {
+                flex-direction: column;
+            }
+            .buy-now-box {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .tab-btn {
+                padding: 15px;
+                flex-grow: 1;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="https://mototrad.com/assets/dist/img/mototrad-logo-cropped.jpg" alt="Mototrad Logo" class="logo-img">
+                <span class="tagline">Buy Ride or Revive</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#categories-view">Live Auctions</a></li>
+                <li><a href="index.html#categories-view">Categories</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-primary">Log in / Sign up</a>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <main class="product-page">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="index.html#categories-view">Vintage Cars</a> / 1967 Mustang Fastback
+            </div>
+
+            <div class="product-detail-grid">
+                <!-- Left: Images -->
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <span class="badge hot-badge" style="top: 20px; left: 20px; font-size: 1rem; padding: 8px 15px;">Hot Auction</span>
+                        <img id="main-img" src="car_sold.png" alt="1967 Mustang Fastback Main">
+                    </div>
+                    <div class="thumbnail-list">
+                        <div class="thumbnail active" onclick="changeImage('car_sold.png', this)">
+                            <img src="car_sold.png" alt="Thumb 1">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('car_project.png', this)">
+                            <img src="car_project.png" alt="Thumb 2">
+                        </div>
+                        <!-- Using placeholders for extra angles -->
+                        <div class="thumbnail" onclick="changeImage('https://images.unsplash.com/photo-1584345604476-8cb59123c210?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', this)">
+                            <img src="https://images.unsplash.com/photo-1584345604476-8cb59123c210?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Thumb 3">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', this)">
+                            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Thumb 4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Product Info -->
+                <div class="product-info-detail">
+                    <h1 class="product-title">1967 Mustang Fastback</h1>
+                    <div class="product-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Los Angeles, CA</span>
+                        <span><i class="fas fa-eye"></i> 1,245 Views</span>
+                        <span><i class="fas fa-gavel"></i> 24 Bids</span>
+                        <span><i class="fas fa-car"></i> Condition: Fully Restored</span>
+                    </div>
+
+                    <!-- Realtime Countdown -->
+                    <div class="auction-timer">
+                        <div class="timer-title"><i class="far fa-clock"></i> Auction Ends In</div>
+                        <div class="countdown" id="countdown-timer">
+                            <div class="time-box">
+                                <div class="time-value" id="days">02</div>
+                                <div class="time-label">Days</div>
+                            </div>
+                            <div class="time-box">
+                                <div class="time-value" id="hours">04</div>
+                                <div class="time-label">Hours</div>
+                            </div>
+                            <div class="time-box">
+                                <div class="time-value" id="minutes">12</div>
+                                <div class="time-label">Mins</div>
+                            </div>
+                            <div class="time-box">
+                                <div class="time-value" id="seconds">00</div>
+                                <div class="time-label">Secs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bidding-section">
+                        <div class="current-bid">
+                            Current Bid
+                            <strong>$125,000</strong>
+                        </div>
+                        
+                        <div class="bid-action">
+                            <div class="bid-input-group">
+                                <span>$</span>
+                                <input type="number" class="bid-input" placeholder="Enter bid amount" min="125500" step="500" value="125500">
+                            </div>
+                            <button class="btn btn-primary btn-bid" onclick="placeBid()">Place Bid</button>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-gray); margin-bottom: 25px;">Minimum next bid: $125,500</p>
+
+                        <div class="buy-now-box">
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--text-gray); font-weight: 600; text-transform: uppercase;">Or buy it immediately</div>
+                                <div class="buy-now-price">$150,000</div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="buyNow()" style="padding: 12px 25px; border-radius: var(--radius-md);">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="product-tabs">
+                <div class="tab-headers">
+                    <button class="tab-btn active" onclick="openTab('description')">Description</button>
+                    <button class="tab-btn" onclick="openTab('specifications')">Specifications</button>
+                    <button class="tab-btn" onclick="openTab('history')">Bidding History</button>
+                </div>
+                
+                <div id="description" class="tab-content active description-text">
+                    <p>Presenting a meticulously restored 1967 Ford Mustang Fastback, finished in a stunning Raven Black exterior with a pristine red interior. This iconic American muscle car has undergone a frame-off rotisserie restoration, ensuring every nut and bolt is in showroom condition.</p>
+                    <p>Under the hood lies a rebuilt 289 cu in V8 engine paired with a 4-speed manual transmission, delivering that classic rumble and thrilling driving experience. The car features power steering, power front disc brakes, and the coveted GT equipment group.</p>
+                    <p>Whether you're looking for a weekend cruiser or a show-stopping addition to your collection, this Mustang Fastback represents the pinnacle of '60s automotive design and engineering. Don't miss the opportunity to own a piece of history.</p>
+                </div>
+                
+                <div id="specifications" class="tab-content">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light); width: 30%;">Make</th>
+                            <td style="padding: 15px;">Ford</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light);">Model</th>
+                            <td style="padding: 15px;">Mustang Fastback</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light);">Year</th>
+                            <td style="padding: 15px;">1967</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light);">Engine</th>
+                            <td style="padding: 15px;">289 cu in V8</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light);">Transmission</th>
+                            <td style="padding: 15px;">4-Speed Manual</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 15px; background: var(--bg-light);">Exterior Color</th>
+                            <td style="padding: 15px;">Raven Black</td>
+                        </tr>
+                        <tr>
+                            <th style="padding: 15px; background: var(--bg-light);">Interior Color</th>
+                            <td style="padding: 15px;">Red</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div id="history" class="tab-content">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 15px;">Bidder</th>
+                                <th style="padding: 15px;">Bid Amount</th>
+                                <th style="padding: 15px;">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px;">User_***84</td>
+                                <td style="padding: 15px; font-weight: 600;">$125,000</td>
+                                <td style="padding: 15px; color: var(--text-gray);">2 hours ago</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px;">J***k_T</td>
+                                <td style="padding: 15px; font-weight: 600;">$122,500</td>
+                                <td style="padding: 15px; color: var(--text-gray);">5 hours ago</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 15px;">M_Collector</td>
+                                <td style="padding: 15px; font-weight: 600;">$120,000</td>
+                                <td style="padding: 15px; color: var(--text-gray);">1 day ago</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px;">AutoFan99</td>
+                                <td style="padding: 15px; font-weight: 600;">$115,000</td>
+                                <td style="padding: 15px; color: var(--text-gray);">2 days ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="https://mototrad.com/assets/dist/img/mototrad-logo-cropped.jpg" alt="Mototrad Logo" style="height: 30px; margin-bottom: 15px; opacity: 0.8; filter: grayscale(100%) brightness(200%);">
+                    <p>Premium Auctions Worldwide</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact Support</a>
+                </div>
+                <div class="footer-contact">
+                    <h4 style="color: white; margin-bottom: 15px; font-weight: 600;">Contact Us</h4>
+                    <p style="color: #A0AAB2; margin-bottom: 8px; display: flex; align-items: center;"><i class="fas fa-phone" style="margin-right: 10px; color: var(--primary-color);"></i>(760) 401 4871</p>
+                    <p style="color: #A0AAB2; display: flex; align-items: center;"><i class="fas fa-envelope" style="margin-right: 10px; color: var(--primary-color);"></i>partsthief1@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mototrad. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Image Gallery Swapper
+        function changeImage(src, element) {
+            document.getElementById('main-img').src = src;
+            
+            // Remove active class from all thumbnails
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            
+            // Add active class to clicked thumbnail
+            element.classList.add('active');
+        }
+
+        // Tabs Logic
+        function openTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show the selected tab and add active class to button
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Realtime Countdown Timer
+        // Set the date we're counting down to (2 days from now)
+        const countDownDate = new Date();
+        countDownDate.setDate(countDownDate.getDate() + 2);
+        countDownDate.setHours(countDownDate.getHours() + 4);
+        countDownDate.setMinutes(countDownDate.getMinutes() + 12);
+        
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate.getTime() - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
+            
+            // If the count down is finished
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown-timer").innerHTML = "AUCTION ENDED";
+            }
+        }, 1000);
+
+        // Interactive buttons
+        function placeBid() {
+            const bidInput = document.querySelector('.bid-input').value;
+            if(bidInput >= 125500) {
+                alert(`Your bid of $${Number(bidInput).toLocaleString()} has been placed successfully!`);
+            } else {
+                alert('Your bid must be at least $125,500');
+            }
+        }
+
+        function buyNow() {
+            if(confirm('Are you sure you want to buy this item immediately for $150,000?')) {
+                alert('Congratulations! You have purchased the 1967 Mustang Fastback.');
+            }
+        }
+    </script>
+</body>
+</html>

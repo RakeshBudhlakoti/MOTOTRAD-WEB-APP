@@ -1,0 +1,148 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@8..144,-10..0,25..150,100..900,0..100&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD,ROND@40..48,300,0..1,0,50&display=block");
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #D32F2F;
+  --color-primary-hover: #B71C1C;
+  --color-accent-orange: #FF9800;
+  --color-accent-hover: #F57C00;
+  --color-accent-green: #4CAF50;
+  --color-bg-light: #F7F9FC;
+  --color-text-dark: #1C1E21;
+  --color-text-gray: #606770;
+  --color-border-base: #E4E6EB;
+  
+  --font-sans: 'Google Sans Flex', 'Google Sans', sans-serif;
+  --font-heading: 'Google Sans Flex', 'Google Sans', sans-serif;
+  --font-poppins: 'Google Sans Flex', 'Google Sans', sans-serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background-color: #F7F9FC;
+    color: #1C1E21;
+    font-family: 'Google Sans Flex', 'Google Sans', sans-serif;
+    font-weight: 400;
+    font-optical-sizing: auto;
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Google Sans Flex', 'Google Sans', sans-serif;
+  }
+  code {
+    font-family: 'Courier New', monospace;
+    background-color: #0000000d;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: .9em;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    max-width: 1400px;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    cursor: pointer;
+    text-align: center;
+    text-decoration-line: none;
+    border-width: 0;
+  }
+  
+  .btn-primary {
+    background-color: #D32F2F;
+    color: white;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background-color: #B71C1C;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Legacy Helpers */
+.title-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.title-separator .line {
+  height: 2px;
+  background-color: #e0e0e0;
+  flex-grow: 1;
+}
+
+.section-title-center {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-title-center h2 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: #1C1E21;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+/* Antigravity Utility Styles */
+.symbol {
+  font-family: 'Google Symbols';
+  font-size: var(--symbol-font, 24px);
+  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "ROND" 50, "opsz" 48;
+}
+
+.special-text {
+  color: var(--palette-grey-1200);
+  font-family: 'Google Sans Code', 'Google Sans Mono', monospace;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: -.08px;
+}
+
+.invisible-div {
+  height: 0px;
+}

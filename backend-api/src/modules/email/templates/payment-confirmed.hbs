@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmed</title>
+    <style>
+        body { font-family: 'Poppins', Arial, sans-serif; background-color: #F8FAFC; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 40px; }
+        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; font-family: sans-serif; color: #111111; border-radius: 24px; overflow: hidden; margin-top: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #bdbdbd; }
+        .header { background-color: #ffffff; padding: 40px 0; text-align: center; }
+        .content { padding: 40px 50px; text-align: center; }
+        .icon-circle { width: 70px; height: 70px; background-color: #10B981; border-radius: 50%; margin: 0 auto 30px; display: block; }
+        h1 { font-size: 28px; font-weight: 900; color: #111111; margin: 0 0 20px; text-transform: uppercase; letter-spacing: -1px; }
+        p { font-size: 16px; line-height: 1.6; color: #64748B; margin: 0 0 25px; }
+        .receipt-card { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 30px; margin-bottom: 30px; text-align: left; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .receipt-label { font-weight: 700; color: #64748B; }
+        .receipt-value { font-weight: 800; color: #111111; }
+        .total-row { border-top: 1px solid #E2E8F0; margin-top: 15px; padding-top: 15px; }
+        .total-label { font-size: 16px; font-weight: 900; color: #111111; }
+        .total-value { font-size: 20px; font-weight: 900; color: #C90000; }
+        .button { display: inline-block; padding: 18px 45px; background-color: #111111; color: #ffffff !important; text-decoration: none; border-radius: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .footer { padding: 40px 50px; text-align: center; font-size: 12px; color: #94A3B8; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="{{logoUrl}}" alt="Mototrad" width="140" style="display: block; margin: 0 auto;">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <div class="icon-circle">
+                        <img src="https://img.icons8.com/ios-filled/35/ffffff/checkmark.png" style="vertical-align: middle; padding-top: 17px;">
+                    </div>
+                    {{#if isDeposit}}
+                    <h1>Deposit Payment Success!</h1>
+                    <p>Your partial deposit payment has been successfully processed. The item has been secured for you. Please see the detailed invoice below for your payment status and remaining balance.</p>
+                    {{else}}
+                    <h1>Payment Success!</h1>
+                    <p>Your payment has been successfully processed. Thank you for your purchase with Mototrad. Your order is now being processed.</p>
+                    {{/if}}
+                    
+                    <div class="receipt-card">
+                        <div style="margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 10px;">
+                            <span style="font-size: 12px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 1px;">Order Summary</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">Order Number:</span>
+                            <span class="receipt-value">#{{orderNumber}}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">Status:</span>
+                            <span class="receipt-value" style="text-transform: capitalize;">{{status}}</span>
+                        </div>
+                        <div style="margin: 15px 0; border-top: 1px dashed #E2E8F0;"></div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">Winning Bid / Base Price:</span>
+                            <span class="receipt-value">${{baseAmount}}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">Platform Commission:</span>
+                            <span class="receipt-value" style="color: #DC2626;">+ ${{commissionAmount}}</span>
+                        </div>
+                        <div style="margin: 15px 0; border-top: 1px dashed #E2E8F0;"></div>
+                        <div class="receipt-row">
+                            <span class="receipt-label" style="color: #10B981; font-weight: 900;">Amount Paid (This Transaction):</span>
+                            <span class="receipt-value" style="color: #10B981; font-weight: 900;">${{amount}}</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">Total Amount Paid (So Far):</span>
+                            <span class="receipt-value" style="color: #10B981; font-weight: 700;">${{paidAmount}}</span>
+                        </div>
+                        {{#if onlineDeposit}}
+                        <div class="receipt-row" style="padding-left: 15px; font-size: 13px;">
+                            <span class="receipt-label" style="font-weight: 600; color: #4B5563;">↳ Online Deposit (PayPal):</span>
+                            <span class="receipt-value" style="color: #4B5563;">${{onlineDeposit}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if cashPayment}}
+                        <div class="receipt-row" style="padding-left: 15px; font-size: 13px;">
+                            <span class="receipt-label" style="font-weight: 600; color: #4B5563;">↳ Offline COD Settlement:</span>
+                            <span class="receipt-value" style="color: #4B5563;">${{cashPayment}}</span>
+                        </div>
+                        {{/if}}
+                        <div class="receipt-row total-row">
+                            <span class="total-label" style="font-weight: 900;">Remaining Balance Due:</span>
+                            <span class="total-value" style="color: #2563EB; font-weight: 900;">${{remainingAmount}}</span>
+                        </div>
+                    </div>
+
+                    <a href="{{frontendUrl}}/profile?tab=orders" class="button">Track My Order</a>
+
+                    <p style="font-size: 13px; margin-top: 30px;">A receipt has been attached to your account for future reference.</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p style="margin-bottom: 10px;">&copy; {{year}} Mototrad. All rights reserved.</p>
+                    <p>You received this as a confirmation of your recent transaction on Mototrad.</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

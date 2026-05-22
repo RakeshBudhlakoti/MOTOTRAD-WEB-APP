@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding: 40px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #bdbdbd; }
+        .logo { width: 150px; margin-bottom: 30px; }
+        h1 { color: #0f172a; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+        p { color: #64748b; line-height: 1.6; font-size: 16px; }
+        .credentials-box { background: #f1f5f9; padding: 20px; border-radius: 16px; margin: 30px 0; border: 1px solid #e2e8f0; }
+        .cred-row { margin-bottom: 10px; }
+        .cred-label { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+        .cred-value { font-size: 18px; font-weight: 700; color: #0f172a; font-family: monospace; }
+        .btn { display: inline-block; padding: 16px 32px; background-color: #0f172a; color: white; text-decoration: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; margin-top: 20px; }
+        .footer { text-align: center; margin-top: 40px; color: #94a3b8; font-size: 14px; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {{#if logoUrl}}
+        <img src="{{logoUrl}}" alt="Mototrad Logo" class="logo">
+        {{/if}}
+        
+        <h1>Welcome to Mototrad, {{name}}!</h1>
+        
+        <p>An administrator has created an account for you on the Mototrad platform. You can now log in using the temporary credentials below.</p>
+        
+        <div class="credentials-box">
+            <div class="cred-row">
+                <div class="cred-label">Email Address</div>
+                <div class="cred-value">{{email}}</div>
+            </div>
+            <div class="cred-row">
+                <div class="cred-label">Temporary Password</div>
+                <div class="cred-value">{{tempPassword}}</div>
+            </div>
+        </div>
+
+        <p>For your security, please log in immediately and change your password in your Account Settings.</p>
+        
+        <a href="{{loginUrl}}" class="btn">Log In to Your Account</a>
+    </div>
+    <div class="footer">
+        &copy; {{year}} Mototrad. All rights reserved.
+    </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; padding: 0; background-color: #F8FAFC; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 60px; padding-top: 60px; }
+        .main { background-color: #FFFFFF; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #bdbdbd; }
+        .header { padding: 40px 0; text-align: center; background-color: #FFFFFF; }
+        .content { padding: 0 50px 40px 50px; text-align: center; }
+        .icon-circle { width: 70px; height: 70px; background-color: #111111; border-radius: 50%; display: inline-block; margin-bottom: 25px; text-align: center; line-height: 70px; }
+        h1 { color: #111111; font-size: 28px; font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: -0.5px; }
+        p { color: #64748B; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0; font-weight: 500; }
+        .price-badge { background-color: #F1F5F9; color: #111111; font-size: 24px; font-weight: 900; padding: 15px 30px; border-radius: 16px; display: inline-block; margin-bottom: 25px; }
+        .button { display: inline-block; padding: 16px 45px; background-color: #C90000; color: #FFFFFF !important; text-decoration: none; border-radius: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(201, 0, 0, 0.15); }
+        .footer { padding: 30px 50px; text-align: center; background-color: #FDFDFD; border-top: 1px solid #F1F5F9; }
+        .footer-text { color: #94A3B8; font-size: 12px; margin: 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="{{logoUrl}}" alt="Mototrad" width="140" style="display: block; margin: 0 auto;">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <div class="icon-circle">
+                        <img src="https://img.icons8.com/ios-filled/35/ffffff/notification.png" style="vertical-align: middle; padding-top: 17px;">
+                    </div>
+                    <h1>New Bid Received</h1>
+                    <p style="font-weight: 800; color: #111111;">A new bid of <span style="color: #C90000;">${{amount}}</span> has been placed on <span style="color: #C90000;">{{auctionTitle}}</span>.</p>
+                    <p>Bidder Name: <strong>{{bidderName}}</strong></p>
+                    
+                    <div class="price-badge">${{amount}}</div>
+                    
+                    <br>
+                    <a href="https://admin.mototrad.com/auctions" class="button">Go to Admin Panel</a>
+
+                    <p style="font-size: 14px; color: #111111; font-weight: 800; margin-bottom: 5px;">This is an automated notification for the administrator.</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p class="footer-text">&copy; {{year}} Mototrad Marketplace. All rights reserved.</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

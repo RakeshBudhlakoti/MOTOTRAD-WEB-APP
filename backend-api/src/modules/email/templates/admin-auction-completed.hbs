@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auction Completed - Admin Alert</title>
+    <style>
+        body { font-family: 'Poppins', Arial, sans-serif; background-color: #F8FAFC; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 40px; }
+        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; font-family: sans-serif; color: #111111; border-radius: 24px; overflow: hidden; margin-top: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+        .header { background-color: #111111; padding: 40px 0; text-align: center; }
+        .content { padding: 40px 50px; text-align: left; }
+        .status-badge { display: inline-block; padding: 6px 16px; background-color: #DEF7EC; color: #03543F; font-size: 12px; font-weight: 700; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        h1 { font-size: 24px; font-weight: 800; color: #111111; margin: 0 0 15px; letter-spacing: -0.5px; }
+        p { font-size: 15px; line-height: 1.6; color: #64748B; margin: 0 0 20px; }
+        .summary-card { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 25px; margin-bottom: 35px; }
+        .summary-title { font-size: 16px; font-weight: 700; color: #111111; margin: 0 0 15px; border-bottom: 1px solid #E2E8F0; padding-bottom: 10px; }
+        .summary-row { display: table; width: 100%; margin-bottom: 10px; }
+        .summary-label { display: table-cell; font-size: 13px; font-weight: 600; color: #64748B; width: 45%; }
+        .summary-value { display: table-cell; font-size: 13px; font-weight: 700; color: #111111; text-align: right; }
+        .highlight-value { color: #C90000; font-size: 15px; }
+        .button { display: inline-block; padding: 16px 35px; background-color: #C90000; color: #ffffff !important; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; text-align: center; }
+        .footer { padding: 40px 50px; text-align: center; font-size: 12px; color: #94A3B8; border-top: 1px solid #F1F5F9; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="{{logoUrl}}" alt="Mototrad Logo" width="140" style="display: block; margin: 0 auto; filter: brightness(0) invert(1);">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <span class="status-badge">Auction Completed</span>
+                    <h1>Administrative Notification</h1>
+                    <p>An auction on Mototrad has successfully closed with active bidding and been processed by the system.</p>
+                    
+                    <div class="summary-card">
+                        <div class="summary-title">Auction Summary: {{auctionTitle}}</div>
+                        
+                        <div class="summary-row">
+                            <span class="summary-label">Winner Name:</span>
+                            <span class="summary-value">{{winnerName}}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Winner Email:</span>
+                            <span class="summary-value">{{winnerEmail}}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Winning Bid:</span>
+                            <span class="summary-value highlight-value">${{winningBid}}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Commission Charged:</span>
+                            <span class="summary-value highlight-value">${{commissionAmount}}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Total Invoice Amount:</span>
+                            <span class="summary-value">${{totalAmount}}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Total Bids Placed:</span>
+                            <span class="summary-value">{{bidCount}} bids</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Completed At:</span>
+                            <span class="summary-value">{{endedAtFormatted}}</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 13px; color: #94A3B8;">A pending order and initial deposit payment has been generated automatically for the buyer. Please review this order in the Administrator Control Panel.</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p style="margin-bottom: 10px;">&copy; {{year}} Mototrad. Admin Systems.</p>
+                    <p>This is an automated system notification regarding transactional activity.</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

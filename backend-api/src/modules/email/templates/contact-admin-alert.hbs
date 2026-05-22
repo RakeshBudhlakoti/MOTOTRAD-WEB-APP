@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; padding: 0; background-color: #F8FAFC; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 60px; padding-top: 60px; }
+        .main { background-color: #FFFFFF; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #bdbdbd; }
+        .header { padding: 40px 0; text-align: center; background-color: #FFFFFF; }
+        .content { padding: 0 50px 40px 50px; text-align: left; }
+        .icon-container { text-align: center; margin-bottom: 25px; }
+        .icon-circle { width: 70px; height: 70px; background-color: #C90000; border-radius: 50%; display: inline-block; text-align: center; line-height: 70px; }
+        h1 { color: #111111; font-size: 24px; font-weight: 900; margin: 0 0 20px 0; text-transform: uppercase; letter-spacing: -0.5px; text-align: center; }
+        p { color: #64748B; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; font-weight: 500; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .info-table td { padding: 8px 12px; font-size: 14px; border-bottom: 1px solid #F1F5F9; }
+        .info-table td.label { font-weight: 800; color: #111111; width: 120px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .info-table td.value { color: #475569; font-weight: 500; }
+        .message-box { background-color: #F8FAFC; border-left: 4px solid #C90000; padding: 20px; border-radius: 4px; margin-bottom: 25px; }
+        .message-title { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #111111; margin: 0 0 8px 0; }
+        .message-text { color: #475569; font-size: 14px; line-height: 1.6; margin: 0; font-style: italic; white-space: pre-wrap; }
+        .footer { padding: 30px 50px; text-align: center; background-color: #FDFDFD; border-top: 1px solid #F1F5F9; }
+        .footer-text { color: #94A3B8; font-size: 12px; margin: 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <tr>
+                <td class="header">
+                    <img src="{{logoUrl}}" alt="Mototrad" width="140" style="display: block; margin: 0 auto;">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <div class="icon-container">
+                        <div class="icon-circle">
+                            <img src="https://img.icons8.com/ios-filled/35/ffffff/new-post.png" style="vertical-align: middle; padding-top: 17px;">
+                        </div>
+                    </div>
+                    <h1>New Support Inquiry</h1>
+                    <p>A new customer inquiry has been submitted through the Mototrad Contact Us portal:</p>
+                    
+                    <table class="info-table">
+                        <tr>
+                            <td class="label">Sender Name</td>
+                            <td class="value">{{senderName}}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Email Address</td>
+                            <td class="value"><a href="mailto:{{senderEmail}}" style="color: #C90000; text-decoration: none;">{{senderEmail}}</a></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Phone</td>
+                            <td class="value">{{senderPhone}}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Subject</td>
+                            <td class="value" style="font-weight: 700; color: #111111;">{{subject}}</td>
+                        </tr>
+                    </table>
+
+                    <div class="message-box">
+                        <div class="message-title">Customer Message</div>
+                        <p class="message-text">"{{message}}"</p>
+                    </div>
+
+                    <p style="font-size: 12px; text-align: center; color: #94A3B8; font-weight: 700; margin-top: 30px;">
+                        This is an automated system alert. Please sign in to the Admin Panel to reply.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p class="footer-text">&copy; {{year}} Mototrad Marketplace. All rights reserved.</p>
+                    <p class="footer-text" style="margin-top: 5px;">Dubai, United Arab Emirates</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
