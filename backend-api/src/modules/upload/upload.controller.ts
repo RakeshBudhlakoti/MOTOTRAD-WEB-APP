@@ -2,6 +2,7 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Public } from '../../common/decorators/public.decorator';
 
 @ApiTags('upload')
 @Controller('upload')
@@ -9,6 +10,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
+  @Public()
   @Post('presigned-url')
   @ApiOperation({ summary: 'Get a presigned S3 URL for secure file upload' })
   getPresignedUrl(

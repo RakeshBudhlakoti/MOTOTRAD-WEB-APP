@@ -6,6 +6,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import apiClient from '@/lib/axios';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import { getErrorMessage } from '@/utils/error';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -244,7 +245,7 @@ export default function RegisterPage() {
 
     } catch (error: any) {
       console.error('Registration failed:', error);
-      const message = error.response?.data?.message || 'Registration failed. Please try again.';
+      const message = getErrorMessage(error);
       
       Swal.fire({
         icon: 'error',

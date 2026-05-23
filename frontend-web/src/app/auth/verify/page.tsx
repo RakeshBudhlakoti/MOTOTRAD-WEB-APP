@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiClient from '@/lib/axios';
+import { getErrorMessage } from '@/utils/error';
 
 function VerifyPageContent() {
   const searchParams = useSearchParams();
@@ -30,7 +31,7 @@ function VerifyPageContent() {
         }, 3000);
       } catch (error: any) {
         setStatus('error');
-        setMessage(error.response?.data?.message || 'Verification failed. The link may have expired.');
+        setMessage(getErrorMessage(error));
       }
     };
 

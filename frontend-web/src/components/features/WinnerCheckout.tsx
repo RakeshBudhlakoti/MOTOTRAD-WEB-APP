@@ -5,6 +5,7 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { orderService } from '@/services/order.service';
 import { toast } from 'react-hot-toast';
 import CommissionBreakdown from './CommissionBreakdown';
+import { getErrorMessage } from '@/utils/error';
 
 interface WinnerCheckoutProps {
   order: any;
@@ -19,7 +20,7 @@ export default function WinnerCheckout({ order, onSuccess }: WinnerCheckoutProps
       const { paypalOrderId } = await orderService.initiateDepositPayment(order.id);
       return paypalOrderId;
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to initiate payment');
+      toast.error(getErrorMessage(error));
       throw error;
     }
   };
@@ -31,7 +32,7 @@ export default function WinnerCheckout({ order, onSuccess }: WinnerCheckoutProps
       toast.success('Deposit paid successfully!');
       onSuccess();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to capture payment');
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
