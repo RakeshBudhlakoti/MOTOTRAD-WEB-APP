@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { toggleSidebar, setMobileSidebarOpen } from '../../store/slices/layoutSlice';
 import { logout } from '../../store/slices/authSlice';
+import { ADMIN_CONSTANTS } from '@/constants/app.constants';
 
 // Helper component for styled colorful sidebar icon containers
 const ColoredIcon = ({ Icon, className, isActive }: { Icon: any, className: string, isActive: boolean }) => {
@@ -117,6 +118,23 @@ export default function Sidebar() {
 
   // Manage single-open expandable sidebar group state
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [siteLogo, setSiteLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch(`${ADMIN_CONSTANTS.API_URL}/settings/public`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.site_logo) {
+          setSiteLogo(data.site_logo);
+        }
+      } catch (error) {
+        console.error('Error fetching dynamic logo:', error);
+      }
+    };
+    fetchLogo();
+  }, []);
 
   // Synchronize open group with the active page pathname on navigate
   useEffect(() => {
@@ -161,12 +179,25 @@ export default function Sidebar() {
       {/* Brand Logo */}
       <div className="h-[var(--header-height)] flex items-center justify-between border-b border-slate-200 px-4 bg-slate-50/50">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white font-black text-lg shrink-0 shadow-sm shadow-blue-200">
-            M
-          </div>
-          {(!isCollapsed || isMobileOpen) && (
+          {siteLogo ? (
+            <img 
+              src={siteLogo} 
+              alt="Mototrad Logo" 
+              className="h-8 w-auto object-contain max-w-[120px]" 
+            />
+          ) : (
+            <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white font-black text-lg shrink-0 shadow-sm shadow-blue-200">
+              M
+            </div>
+          )}
+          {(!isCollapsed || isMobileOpen) && !siteLogo && (
             <span className="ml-3 font-extrabold text-sm tracking-widest uppercase text-slate-800">
               Mototrad <span className="text-blue-600">Admin</span>
+            </span>
+          )}
+          {(!isCollapsed || isMobileOpen) && siteLogo && (
+            <span className="ml-3 font-extrabold text-xs tracking-widest uppercase text-slate-800">
+              Admin
             </span>
           )}
         </div>

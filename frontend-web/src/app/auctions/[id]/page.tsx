@@ -32,6 +32,12 @@ export default function AuctionDetailPage() {
   const [onlineBidders, setOnlineBidders] = useState(1);
   const [membershipFee, setMembershipFee] = useState<number>(5);
   const [allowBuyNowAfterBids, setAllowBuyNowAfterBids] = useState<boolean>(false);
+  const [proBiddersCount, setProBiddersCount] = useState<number>(2400);
+  const [proBiddersAvatars, setProBiddersAvatars] = useState<Array<{avatar: string | null, initial: string}>>([
+    { avatar: null, initial: 'A' },
+    { avatar: null, initial: 'B' },
+    { avatar: null, initial: 'C' }
+  ]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -44,6 +50,12 @@ export default function AuctionDetailPage() {
           }
           if (settings.ALLOW_BUY_NOW_AFTER_BIDS !== undefined) {
             setAllowBuyNowAfterBids(settings.ALLOW_BUY_NOW_AFTER_BIDS === true || settings.ALLOW_BUY_NOW_AFTER_BIDS === 'true');
+          }
+          if (settings.pro_bidders_count !== undefined) {
+            setProBiddersCount(Number(settings.pro_bidders_count));
+          }
+          if (settings.pro_bidders_avatars !== undefined && Array.isArray(settings.pro_bidders_avatars)) {
+            setProBiddersAvatars(settings.pro_bidders_avatars);
           }
         }
       } catch (err) {
@@ -436,30 +448,37 @@ export default function AuctionDetailPage() {
                                 )}
                             </>
                         ) : (
-                            <div className="bg-[#111] rounded-2xl p-8 lg:p-10 text-white shadow-2xl relative overflow-hidden group border border-white/5">
-                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <i className="fas fa-gem text-[6rem]"></i>
+                            <div className="bg-gradient-to-br from-[#F8FAFC] to-white rounded-3xl p-8 lg:p-10 border-2 border-primary/10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none">
+                                    <i className="fas fa-gem text-[7rem] text-primary"></i>
                                 </div>
-                                <div className="relative z-10">
-                                    <h3 className="text-[1.5rem] font-black mb-4 uppercase tracking-tight">Unlock Pro Access</h3>
-                                    <p className="text-[#888] font-bold text-[0.95rem] mb-8 leading-relaxed">
+                                <div className="relative z-10 flex flex-col items-start">
+                                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-5 shadow-inner">
+                                        <i className="fas fa-gem text-lg"></i>
+                                    </div>
+                                    <h3 className="text-[1.35rem] font-black mb-3 uppercase tracking-tight text-[#0F172A]">Unlock Pro Access</h3>
+                                    <p className="text-[#64748B] font-bold text-[0.88rem] mb-6 leading-relaxed max-w-md">
                                         Bidding and instant purchases are exclusive to Pro Members. Join our elite community to start bidding today.
                                     </p>
                                     <Link 
                                         href="/membership"
-                                        className="bg-primary text-white inline-block px-8 py-4 rounded-xl font-black text-[0.85rem] uppercase tracking-widest transition-all hover:scale-105 shadow-xl active:scale-95"
+                                        className="bg-primary text-white inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-black text-[0.8rem] uppercase tracking-wider transition-all hover:bg-primary-hover hover:-translate-y-0.5 active:translate-y-0 hover:shadow-[0_10px_25px_rgba(201,0,0,0.15)] shadow-md"
                                     >
                                         Upgrade to Pro — ${membershipFee} One time
                                     </Link>
-                                    <div className="mt-8 pt-6 border-t border-white/10 flex items-center gap-3">
-                                        <div className="flex -space-x-2">
-                                            {[1,2,3].map(i => (
-                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#111] bg-[#333] flex items-center justify-center text-[0.6rem] font-black">
-                                                    {String.fromCharCode(64 + i)}
+                                    <div className="w-full mt-6 pt-5 border-t border-[#F1F5F9] flex items-center gap-3">
+                                        <div className="flex -space-x-2.5">
+                                            {proBiddersAvatars.map((u, idx) => (
+                                                <div key={idx} className="w-8 h-8 rounded-full border-2 border-white bg-[#F1F5F9] overflow-hidden flex items-center justify-center text-[0.65rem] font-black text-[#475569] shadow-sm shrink-0">
+                                                    {u.avatar ? (
+                                                        <img src={u.avatar} alt="User Avatar" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span>{u.initial}</span>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
-                                        <span className="text-[0.75rem] text-[#666] font-bold">Joined by 2,400+ Pro bidders this week</span>
+                                        <span className="text-[0.78rem] text-[#64748B] font-bold">Joined by {proBiddersCount.toLocaleString()}+ Pro bidders this week</span>
                                     </div>
                                 </div>
                             </div>
