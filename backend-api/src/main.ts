@@ -9,7 +9,7 @@ const hostname = os.hostname().toLowerCase();
 const isAWS = process.env.NODE_ENV === 'production' || hostname.includes('ec2') || hostname.includes('amazon') || !!process.env.AWS_EXECUTION_ENV;
 
 if (isAWS) {
-  process.env.DATABASE_URL = "postgresql://mototrad_admin:Sarbonne25!!@mototrad-prod-db.c92ugce6qnhm.us-east-2.rds.amazonaws.com:5432/mototradproddb?schema=public&sslmode=require";
+  process.env.DATABASE_URL = process.env.DATABASE_URL_PROD || "postgresql://mototrad_admin:Sarbonne25!!@mototrad-prod-db.c92ugce6qnhm.us-east-2.rds.amazonaws.com:5432/mototradproddb?schema=public&sslmode=require";
 } else if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = "postgresql://postgres:password@127.0.0.1:5432/mototrad?schema=public";
 }
