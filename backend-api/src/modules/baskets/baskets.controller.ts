@@ -29,12 +29,14 @@ export class BasketsController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('isActive') isActive?: string,
+    @Query('isFeatured') isFeatured?: string,
   ) {
     return this.basketsService.findAll({
       search,
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
       isActive: isActive !== undefined ? isActive === 'true' : undefined,
+      isFeatured: isFeatured !== undefined ? isFeatured === 'true' : undefined,
     });
   }
 

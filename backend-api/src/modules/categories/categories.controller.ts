@@ -28,6 +28,7 @@ export class CategoriesController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('tree') tree?: boolean,
+    @Query('isFeatured') isFeatured?: string,
   ) {
     return this.categoriesService.findAll({
       includePastCount: Boolean(includePastCount),
@@ -36,6 +37,7 @@ export class CategoriesController {
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
       tree: Boolean(tree),
+      isFeatured: isFeatured !== undefined ? isFeatured === 'true' : undefined,
     });
   }
 

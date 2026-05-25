@@ -15,13 +15,15 @@ export default function PhilosophyPage() {
 
       <div className="container max-w-5xl mx-auto px-4">
         {/* Page Header Banner */}
-        <div className="mb-8 lg:mb-12 text-center">
-          <span className="text-primary text-[0.7rem] lg:text-[0.75rem] font-black uppercase tracking-[4px] mb-2 block">Our Vision</span>
-          <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#111] uppercase tracking-tighter mb-3 leading-tight">
-            Our Philosophy
+        <div className="mb-10 lg:mb-16 text-center">
+          <span className="text-primary text-[10px] font-black uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
+            Our Vision
+          </span>
+          <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#0F172A] tracking-tight leading-tight">
+            Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Philosophy</span>
           </h1>
-          <div className="h-1.5 w-24 bg-primary rounded-full shadow-[0_2px_10px_rgba(211,47,47,0.3)] mx-auto"></div>
-          <p className="mt-4 text-[#64748B] font-bold text-sm lg:text-base max-w-[650px] leading-relaxed mx-auto">
+          <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 mx-auto rounded-full mt-4 mb-4" />
+          <p className="mt-4 text-[#475569] text-sm lg:text-base font-medium max-w-[650px] leading-relaxed mx-auto px-4">
             At Mototrad, we bridge modern digital connection with raw vehicle marketplace efficiency.
           </p>
         </div>

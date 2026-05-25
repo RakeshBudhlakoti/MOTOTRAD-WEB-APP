@@ -66,13 +66,14 @@ export default function MembershipPage() {
             <div className="container max-w-5xl px-4 mx-auto">
                 {/* Header Section */}
                 <div className="text-center mb-16 animate-fade-in">
-                    <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[0.7rem] font-black uppercase tracking-widest mb-4 inline-block">
+                    <span className="text-primary text-[10px] font-black uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
                         Exclusive Access
                     </span>
-                    <h1 className="text-[2.5rem] lg:text-[4rem] font-black text-[#111] leading-none tracking-tight mb-6">
-                        Unlock <span className="text-primary">Pro</span> Membership
+                    <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#0F172A] tracking-tight leading-tight">
+                        Unlock <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Pro</span> Membership
                     </h1>
-                    <p className="text-[#64748B] text-[1.1rem] lg:text-[1.25rem] max-w-2xl mx-auto font-medium">
+                    <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 mx-auto rounded-full mt-4 mb-4" />
+                    <p className="text-[#475569] text-sm lg:text-base font-medium max-w-2xl mx-auto leading-relaxed px-4">
                         Join the elite community of Mototrad. Place unlimited bids, buy items instantly, and get priority access to premium auctions.
                     </p>
                 </div>

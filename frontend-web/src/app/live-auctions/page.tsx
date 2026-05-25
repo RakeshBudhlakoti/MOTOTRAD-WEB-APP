@@ -23,7 +23,8 @@ function LiveAuctionsContent() {
     categoryService.findAll({ includeActiveCount: true })
   );
   // Support both paginated structure and flat array fallback
-  const categories = (categoriesData as any)?.items || (Array.isArray(categoriesData) ? categoriesData : []);
+  const categoriesRaw = (categoriesData as any)?.items || (Array.isArray(categoriesData) ? categoriesData : []);
+  const categories = categoriesRaw.filter((cat: any) => cat.isActive !== false);
 
   // Fetch active baskets for filter
   const { data: basketsData } = useAppQuery(['baskets-live-filters'], () => 
@@ -75,12 +76,34 @@ function LiveAuctionsContent() {
 
       <div className="container">
         {/* Page Header */}
-        <div className="mb-8 lg:mb-12">
-          <span className="text-primary text-[0.7rem] font-black uppercase tracking-[4px] mb-2 block">Premium Inventory</span>
-          <h1 className="text-[2rem] lg:text-[2.8rem] font-black text-[#111] uppercase tracking-tighter mb-3 leading-tight">
-            {searchFilter ? `Search: "${searchFilter}"` : categoryFilter ? `Live Auctions: ${categoryFilter.replace(/-/g, ' ')}` : 'Live & Upcoming Auctions'}
+        <div className="mb-10 lg:mb-16">
+          <span className="text-primary text-[10px] font-black uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
+            Premium Inventory
+          </span>
+          <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#0F172A] tracking-tight leading-tight mb-3">
+            {searchFilter ? (
+              <>
+                Search: <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">"{searchFilter}"</span>
+              </>
+            ) : categoryFilter ? (
+              (() => {
+                const catName = categoryFilter.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const words = catName.split(' ');
+                const lastWord = words.pop();
+                return (
+                  <>
+                    Live Auctions: {words.join(' ')}{words.length > 0 ? ' ' : ''}
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">{lastWord}</span>
+                  </>
+                );
+              })()
+            ) : (
+              <>
+                Live & Upcoming <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Auctions</span>
+              </>
+            )}
           </h1>
-          <div className="h-1.5 w-24 bg-primary rounded-full shadow-[0_2px_10px_rgba(211,47,47,0.3)]"></div>
+          <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 rounded-full mt-4 mb-4" />
           {searchFilter ? (
             <div className="flex items-center gap-2 mt-4">
               <span className="text-[#64748B] font-medium text-sm">Showing search results for keyword</span>

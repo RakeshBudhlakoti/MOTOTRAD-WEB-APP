@@ -1,7 +1,7 @@
 import apiClient from '@/lib/axios';
 
 export const categoryService = {
-  findAll: async (params?: { includePastCount?: boolean; includeActiveCount?: boolean }) => {
+  findAll: async (params?: { includePastCount?: boolean; includeActiveCount?: boolean; isFeatured?: boolean }) => {
     const { data } = await apiClient.get('/categories', { params });
     return data;
   },

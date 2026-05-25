@@ -162,6 +162,7 @@ model Category {
   description String?
   imageUrl    String?
   isActive    Boolean             @default(true)
+  isFeatured  Boolean             @default(false)
   attributes  CategoryAttribute[]
   products    Product[]
 
@@ -183,6 +184,7 @@ model Basket {
   description String?
   image       String?
   isActive    Boolean   @default(true)
+  isFeatured  Boolean   @default(false)
   products    Product[]
 
   createdAt   DateTime  @default(now())

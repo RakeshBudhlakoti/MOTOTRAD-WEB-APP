@@ -9,7 +9,7 @@ export class BasketsService {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
   }
 
-  async create(data: { name: string; slug?: string; description?: string; image?: string; isActive?: boolean }) {
+  async create(data: { name: string; slug?: string; description?: string; image?: string; isActive?: boolean; isFeatured?: boolean }) {
     let slug = data.slug || this.generateSlug(data.name);
 
     const existing = await this.prisma.basket.findUnique({ where: { slug } });
@@ -24,11 +24,12 @@ export class BasketsService {
         description: data.description,
         image: data.image,
         isActive: data.isActive ?? true,
+        isFeatured: data.isFeatured ?? false,
       },
     });
   }
 
-  async findAll(params?: { search?: string; page?: number; limit?: number; isActive?: boolean }) {
+  async findAll(params?: { search?: string; page?: number; limit?: number; isActive?: boolean; isFeatured?: boolean }) {
     const page = Number(params?.page) || 1;
     const limit = Number(params?.limit) || 20;
     const skip = (page - 1) * limit;
@@ -39,6 +40,9 @@ export class BasketsService {
     }
     if (params?.isActive !== undefined) {
       where.isActive = params.isActive;
+    }
+    if (params?.isFeatured !== undefined) {
+      where.isFeatured = params.isFeatured;
     }
 
     const [items, total] = await Promise.all([
@@ -87,10 +91,10 @@ export class BasketsService {
       }
     }
 
-    const { name, slug, description, image, isActive } = data;
+    const { name, slug, description, image, isActive, isFeatured } = data;
     return this.prisma.basket.update({
       where: { id },
-      data: { name, slug, description, image, isActive },
+      data: { name, slug, description, image, isActive, isFeatured },
     });
   }
 

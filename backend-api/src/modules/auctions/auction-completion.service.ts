@@ -19,9 +19,32 @@ export class AuctionCompletionService {
 
   @Cron('*/30 * * * * *')
   async handleAuctionCompletions() {
-    this.logger.log('⌛ Checking for expired auctions...');
+    this.logger.log('⌛ Checking for auctions to start or expire...');
 
-    // 1. Fetch expired ACTIVE auctions
+    // 1. Automatically activate PENDING auctions whose startTime has arrived
+    try {
+      const pendingToStart = await this.prisma.auction.findMany({
+        where: {
+          startTime: { lte: new Date() },
+          status: 'PENDING',
+        },
+      });
+
+      if (pendingToStart.length > 0) {
+        this.logger.log(`Found ${pendingToStart.length} pending auctions whose start time has arrived. Activating...`);
+        for (const auction of pendingToStart) {
+          await this.prisma.auction.update({
+            where: { id: auction.id },
+            data: { status: 'ACTIVE' },
+          });
+          this.logger.log(`Auction ${auction.id} is now ACTIVE.`);
+        }
+      }
+    } catch (startErr) {
+      this.logger.error(`Failed to automatically start pending auctions: ${startErr.message}`, startErr.stack);
+    }
+
+    // 2. Fetch expired ACTIVE auctions
     const expiredAuctions = await this.prisma.auction.findMany({
       where: {
         endTime: { lte: new Date() },

@@ -30,7 +30,8 @@ export default function EditCategoryPage() {
     description: '',
     imageUrl: '',
     parentId: '',
-    isActive: true
+    isActive: true,
+    isFeatured: false
   });
 
   // Fetch the specific category to edit
@@ -55,7 +56,8 @@ export default function EditCategoryPage() {
         description: categoryData.description || '',
         imageUrl: categoryData.imageUrl || '',
         parentId: categoryData.parentId || '',
-        isActive: categoryData.isActive !== false
+        isActive: categoryData.isActive !== false,
+        isFeatured: categoryData.isFeatured === true
       });
     }
   }, [categoryData]);
@@ -246,23 +248,44 @@ export default function EditCategoryPage() {
 
               {/* Status Section */}
               <Card title="Settings" icon={<Layers size={16} className="text-amber-500" />}>
-                 <div className="flex items-start gap-4 p-4 bg-slate-50 border border-slate-100 rounded-sm">
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                       <input 
-                         type="checkbox" 
-                         className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                         checked={formData.isActive}
-                         onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                       />
-                       <div className="flex flex-col">
-                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">
-                           Category is Active
-                         </span>
-                         <span className="text-[10px] text-slate-400 font-bold mt-0.5">
-                           If checked, this category and its products will be visible on the public website.
-                         </span>
-                       </div>
-                    </label>
+                 <div className="space-y-4">
+                   <div className="flex items-start gap-4 p-4 bg-slate-50 border border-slate-100 rounded-sm">
+                      <label className="flex items-center gap-3 cursor-pointer select-none">
+                         <input 
+                           type="checkbox" 
+                           className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                           checked={formData.isActive}
+                           onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
+                         />
+                         <div className="flex flex-col">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">
+                             Category is Active
+                           </span>
+                           <span className="text-[10px] text-slate-400 font-bold mt-0.5">
+                             If checked, this category and its products will be visible on the public website.
+                           </span>
+                         </div>
+                      </label>
+                   </div>
+
+                   <div className="flex items-start gap-4 p-4 bg-slate-50 border border-slate-100 rounded-sm">
+                      <label className="flex items-center gap-3 cursor-pointer select-none">
+                         <input 
+                           type="checkbox" 
+                           className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                           checked={formData.isFeatured}
+                           onChange={(e) => setFormData({...formData, isFeatured: e.target.checked})}
+                         />
+                         <div className="flex flex-col">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">
+                             Featured Category (Home Page)
+                           </span>
+                           <span className="text-[10px] text-slate-400 font-bold mt-0.5">
+                             If checked, this category will be featured on the homepage BROWSE CATEGORIES list.
+                           </span>
+                         </div>
+                      </label>
+                   </div>
                  </div>
               </Card>
            </div>

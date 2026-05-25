@@ -236,8 +236,10 @@ export class AuthService {
       include: { role: true },
     });
 
-    if (!user) {
-      throw new BadRequestException('User with this email address does not exist');
+    // To prevent email enumeration, return a generic success message even if the user does not exist or has an unsupported status.
+    // We allow password resets for both ACTIVE and INACTIVE (unverified) accounts.
+    if (!user || (user.status !== 'ACTIVE' && user.status !== 'INACTIVE')) {
+      return { message: 'If account exists, reset email sent.' };
     }
 
     // Determine if the request originates from the Admin Portal (port 3000 or custom admin domain)
@@ -245,16 +247,17 @@ export class AuthService {
     const userRole = user.role?.name?.toUpperCase();
 
     if (isAdminOrigin) {
-      // Enforce that only ADMIN and SELLER accounts can recover via the Admin Portal
+      // Enforce that only ADMIN and SELLER accounts can recover via the Admin Portal.
+      // We return the same generic message on failure to maintain security.
       if (userRole !== 'ADMIN' && userRole !== 'SELLER') {
-        throw new BadRequestException('Access Denied. Standard buyer accounts are not authorized to recover passwords via the Admin Portal.');
+        return { message: 'If account exists, reset email sent.' };
       }
     }
 
     // Generate secure reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
-    const resetTokenExpires = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -264,12 +267,14 @@ export class AuthService {
       },
     });
 
-    const resetUrl = `${origin}/auth/reset-password?token=${resetToken}`;
+    const resetUrl = isAdminOrigin
+      ? `${origin}/auth/reset-password?token=${resetToken}`
+      : `${this.configService.get('FRONTEND_URL') || 'http://localhost:3001'}/reset-password?token=${resetToken}`;
     const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'User';
 
     await this.emailService.sendPasswordResetEmail(user.email, name, resetUrl);
 
-    return { message: 'Password reset link sent successfully' };
+    return { message: 'If account exists, reset email sent.' };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -282,7 +287,7 @@ export class AuthService {
       },
     });
 
-    if (!user) {
+    if (!user || (user.status !== 'ACTIVE' && user.status !== 'INACTIVE')) {
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
@@ -294,6 +299,8 @@ export class AuthService {
         passwordHash,
         resetTokenHash: null,
         resetTokenExpires: null,
+        status: 'ACTIVE',
+        isEmailVerified: true,
       },
     });
 

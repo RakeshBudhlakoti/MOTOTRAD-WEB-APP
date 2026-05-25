@@ -27,6 +27,7 @@ export default function EditBucketPage() {
     description: '',
     image: '',
     isActive: true,
+    isFeatured: false,
   });
 
   const { data: basket, isLoading: isFetching } = useQuery({
@@ -43,6 +44,7 @@ export default function EditBucketPage() {
         description: basket.description || '',
         image: basket.image || '',
         isActive: basket.isActive ?? true,
+        isFeatured: basket.isFeatured === true,
       });
     }
   }, [basket]);
@@ -238,6 +240,26 @@ export default function EditBucketPage() {
                   }`}
                 >
                   {form.isActive ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+                </button>
+              </div>
+            </Card>
+
+            <Card title="Featured Status">
+              <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-lg border border-slate-100">
+                <div>
+                  <p className="text-xs font-black text-slate-700 uppercase tracking-wider">Featured on Home</p>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5 leading-relaxed">
+                    {form.isFeatured ? 'Featured on website homepage' : 'Not featured on homepage'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, isFeatured: !f.isFeatured }))}
+                  className={`transition-colors ${
+                    form.isFeatured ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-slate-400'
+                  }`}
+                >
+                  {form.isFeatured ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
                 </button>
               </div>
             </Card>

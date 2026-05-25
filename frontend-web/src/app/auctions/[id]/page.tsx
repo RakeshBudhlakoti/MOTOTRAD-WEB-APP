@@ -254,7 +254,7 @@ export default function AuctionDetailPage() {
         <div className="flex flex-wrap items-center gap-2 text-[0.75rem] lg:text-[0.8rem] font-semibold mb-6 lg:mb-10 uppercase tracking-wider text-[#64748B]">
             <Link href="/" className="text-primary no-underline hover:underline">Home</Link>
             <span className="text-[#BBB] font-normal">/</span>
-            <Link href={`/auctions?category=${auction.product.category?.slug}`} className="text-primary no-underline hover:underline">
+            <Link href={`/live-auctions?category=${auction.product.category?.slug}`} className="text-primary no-underline hover:underline">
                 {auction.product.category?.name || 'Real Estate'}
             </Link>
             <span className="text-[#BBB] font-normal">/</span>
@@ -379,24 +379,41 @@ export default function AuctionDetailPage() {
                 )}
 
                 {!isEnded && auction.type !== 'BUY_NOW_ONLY' && (
-                    <div className="flex items-center justify-between mb-8 px-2">
-                        <div className="flex items-center gap-6">
-                            <div className="flex flex-col">
-                                <span className="text-[0.65rem] text-[#888] font-black uppercase tracking-wider">Total Bids</span>
-                                <span className="text-[1.2rem] font-black text-[#111]">{liveBids.length || auction.bidCount}</span>
-                            </div>
-                            <div className="w-px h-8 bg-slate-200"></div>
-                            <div className="flex flex-col">
-                                <span className="text-[0.65rem] text-[#888] font-black uppercase tracking-wider">Watching</span>
-                                <span className="text-[1.2rem] font-black text-[#111] flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                    {onlineBidders}
-                                </span>
-                            </div>
+                    <div className="bg-[#F8FAFC] rounded-2xl p-5 md:p-6 border border-[#E2E8F0] mb-8 lg:mb-10 grid grid-cols-3 gap-4 md:gap-6 text-center select-none shadow-[0_4px_20px_rgba(0,0,0,0.015)]">
+                        {/* Current Bid / Price */}
+                        <div className="flex flex-col items-center justify-center border-r border-[#E2E8F0] px-1 md:px-3">
+                            <span className="text-[0.68rem] text-[#64748B] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5 justify-center">
+                                <i className="fas fa-gavel text-primary/60 text-[0.7rem]"></i>
+                                Current Bid
+                            </span>
+                            <span className="text-[1.3rem] md:text-[1.6rem] font-black text-[#0F172A] leading-none tracking-tight mb-1.5">
+                                ${currentBid.toLocaleString()}
+                            </span>
+                            <span className="text-[0.65rem] text-[#94A3B8] font-bold">
+                                Min Inc: ${Number(auction.bidIncrement || 100).toLocaleString()}
+                            </span>
                         </div>
-                        <div className="text-right">
-                             <span className="text-[0.65rem] text-primary font-black uppercase tracking-wider block">Min. Increment</span>
-                             <span className="text-[1rem] font-black text-[#111]">${Number(auction.bidIncrement || 100).toLocaleString()}</span>
+
+                        {/* Bids Counter */}
+                        <div className="flex flex-col items-center justify-center border-r border-[#E2E8F0] px-1 md:px-3">
+                            <span className="text-[0.68rem] text-[#64748B] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5 justify-center">
+                                <i className="fas fa-history text-[#64748B]/60 text-[0.7rem]"></i>
+                                Total Bids
+                            </span>
+                            <span className="text-[1.3rem] md:text-[1.6rem] font-black text-[#0F172A] leading-none tracking-tight">
+                                {liveBids.length || auction.bidCount || 0}
+                            </span>
+                        </div>
+
+                        {/* Live Bidders / Watching */}
+                        <div className="flex flex-col items-center justify-center px-1 md:px-3">
+                            <span className="text-[0.68rem] text-[#64748B] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5 justify-center">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                Watching
+                            </span>
+                            <span className="text-[1.3rem] md:text-[1.6rem] font-black text-[#0F172A] leading-none tracking-tight">
+                                {onlineBidders}
+                            </span>
                         </div>
                     </div>
                 )}
@@ -408,10 +425,6 @@ export default function AuctionDetailPage() {
                             <>
                                 {(auction.type === 'BID_ONLY' || auction.type === 'BID_AND_BUY') && (
                                     <div className="mb-8 lg:mb-10">
-                                        <span className="text-[#64748B] text-[0.9rem] font-bold block mb-2 uppercase tracking-wider">Current Bid</span>
-                                        <span className="text-[2.8rem] lg:text-[3.8rem] font-black text-primary leading-none block mb-8 tracking-tighter">
-                                            ${currentBid.toLocaleString()}
-                                        </span>
                                         <AuctionBidder 
                                           auctionId={auctionId} 
                                           productId={auction.productId} 

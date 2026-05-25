@@ -1,5 +1,16 @@
 import { PrismaClient, UserStatus, KycStatus, KycDocType, ItemCondition, ProductStatus, AuctionStatus, AttrType } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as os from 'os';
+
+// Auto-detect if running on AWS EC2 or production environment
+const hostname = os.hostname().toLowerCase();
+const isAWS = process.env.NODE_ENV === 'production' || hostname.includes('ec2') || hostname.includes('amazon') || !!process.env.AWS_EXECUTION_ENV;
+
+if (isAWS) {
+  process.env.DATABASE_URL = "postgresql://mototrad_admin:Sarbonne25!!@mototrad-prod-db.c92ugce6qnhm.us-east-2.rds.amazonaws.com:5432/mototradproddb?schema=public&sslmode=require";
+} else if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://postgres:password@127.0.0.1:5432/mototrad?schema=public";
+}
 
 const prisma = new PrismaClient();
 
@@ -167,11 +178,12 @@ async function main() {
   console.log('Creating categories...');
   const carCategory = await prisma.category.upsert({
     where: { slug: 'classic-cars' },
-    update: {},
+    update: { isFeatured: true },
     create: {
       name: 'Classic Cars',
       slug: 'classic-cars',
       description: 'Vintage and classic automobiles',
+      isFeatured: true,
     },
   });
 
@@ -203,11 +215,12 @@ async function main() {
 
   const motoCategory = await prisma.category.upsert({
     where: { slug: 'motorcycles' },
-    update: {},
+    update: { isFeatured: true },
     create: {
       name: 'Motorcycles',
       slug: 'motorcycles',
       description: 'Two-wheeled machines',
+      isFeatured: true,
     },
   });
 

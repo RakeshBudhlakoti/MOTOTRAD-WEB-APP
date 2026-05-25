@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 import { contactService } from '@/services/contact.service';
 import { useSettings } from '@/context/SettingsContext';
 
@@ -17,6 +18,7 @@ type ContactFormData = {
 export default function ContactUsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   const {
     register,
@@ -46,113 +48,191 @@ export default function ContactUsPage() {
     }
   };
 
+  const faqs = [
+    { 
+      q: 'How do I register to bid on vehicles?', 
+      a: 'To place bids, you must create an account and complete our secure KYC verification. Once verified, you can instantly bid on any live or upcoming auctions.' 
+    },
+    { 
+      q: 'Are there any buyer premiums or hidden fees?', 
+      a: 'No, Mototrad operates with 100% transparency. Any applicable buyer premiums or transaction fees are clearly shown on the auction detail page before you bid.' 
+    },
+    { 
+      q: 'How are shipping and transport handled?', 
+      a: 'We partner with premium global logistics networks. Our post-sale team will coordinate transport, customs clearance, and secure delivery to your doorstep.' 
+    }
+  ];
+
   return (
-    <main className="flex-1 w-full bg-[#F8FAFC] py-8 lg:py-16 animate-fade-in">
+    <main className="flex-1 w-full bg-slate-50/50 py-10 lg:py-20 relative overflow-hidden">
+      {/* Dynamic Background Blurs for high-end aesthetic */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+
       {/* SEO Title & Meta Tags */}
       <title>Contact Us | Mototrad Marketplace</title>
       <meta name="description" content="Get in touch with Mototrad. Contact our high-end luxury vehicle, timepiece, and fine art concierge team for any questions or support." />
 
-      <div className="container">
-        {/* Page Header Banner */}
-        <div className="mb-8 lg:mb-12 text-center">
-          <span className="text-primary text-[0.7rem] font-black uppercase tracking-[4px] mb-2 block">Support Concierge</span>
-          <h1 className="text-[2rem] lg:text-[2.8rem] font-black text-[#111] uppercase tracking-tighter mb-3 leading-tight">
-            Contact Our Specialists
+      <div className="container relative z-10">
+        {/* Page Header Banner - Styled in Unified Heading style */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 lg:mb-20 text-center"
+        >
+          <span className="text-primary text-[10px] font-black uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
+            Support Concierge
+          </span>
+          <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#0F172A] tracking-tight leading-tight">
+            Contact Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Specialists</span>
           </h1>
-          <div className="h-1.5 w-24 bg-primary rounded-full shadow-[0_2px_10px_rgba(211,47,47,0.3)] mx-auto"></div>
-          <p className="mt-4 text-[#64748B] font-medium max-w-[650px] leading-relaxed mx-auto">
+          <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 mx-auto rounded-full mt-4 mb-4" />
+          <p className="mt-4 text-[#475569] text-sm lg:text-base font-medium max-w-[600px] leading-relaxed mx-auto px-4">
             Have questions about bidding, selling, or platform membership? Reach out and a Mototrad concierge will assist you immediately.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Dynamic Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch max-w-6xl mx-auto mt-6">
+        {/* Split Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch max-w-6xl mx-auto">
           
-          {/* Left Column: Premium Info Cards */}
-          <div className="lg:col-span-5 flex flex-col gap-6 justify-between">
-            <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-[0_4px_40px_rgba(0,0,0,0.02)] border border-[#F1F5F9] flex flex-col gap-6">
-              <h3 className="text-lg font-black text-[#111] uppercase tracking-tight border-b border-[#F1F5F9] pb-4">
-                Corporate HQ
+          {/* Left Column: Interactive Contact Methods & FAQ Accordion */}
+          <div className="lg:col-span-5 flex flex-col gap-8 justify-between">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="flex flex-col gap-4"
+            >
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[2px] mb-2 px-1">
+                Quick Connection
               </h3>
-              
-              {/* Address info block */}
+
+              {/* VIP Concierge Phone Card */}
+              {supportPhone && (
+                <motion.a
+                  href={`tel:${supportPhone.replace(/[^\d+]/g, '')}`}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="bg-white border border-[#E2E8F0]/70 p-5 rounded-2xl flex items-center gap-4 transition-all duration-300 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_30px_rgba(211,47,47,0.06)] hover:border-primary/20 group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/5 text-primary flex items-center justify-center text-lg transition-transform duration-300 group-hover:scale-110">
+                    <i className="fas fa-phone-alt"></i>
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="font-extrabold text-[#0F172A] text-xs uppercase tracking-wider">Hotline Support</h5>
+                    <p className="text-sm font-black text-slate-800 mt-0.5">{supportPhone}</p>
+                    <span className="text-[9px] text-emerald-600 font-extrabold uppercase mt-1 block">Mon-Sat • 9AM - 8PM EST</span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                    <i className="fas fa-arrow-right text-[10px]"></i>
+                  </div>
+                </motion.a>
+              )}
+
+              {/* Digital Support Email Card */}
+              {supportEmail && (
+                <motion.a
+                  href={`mailto:${supportEmail}`}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="bg-white border border-[#E2E8F0]/70 p-5 rounded-2xl flex items-center gap-4 transition-all duration-300 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_30px_rgba(46,134,222,0.06)] hover:border-blue-500/20 group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/5 text-blue-500 flex items-center justify-center text-lg transition-transform duration-300 group-hover:scale-110">
+                    <i className="fas fa-envelope"></i>
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="font-extrabold text-[#0F172A] text-xs uppercase tracking-wider">Email Concierge</h5>
+                    <p className="text-sm font-black text-slate-800 mt-0.5">{supportEmail}</p>
+                    <span className="text-[9px] text-blue-500 font-extrabold uppercase mt-1 block">Response in under 2 hours</span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 transition-colors group-hover:bg-blue-500/10 group-hover:text-blue-500">
+                    <i className="fas fa-arrow-right text-[10px]"></i>
+                  </div>
+                </motion.a>
+              )}
+
+              {/* Office Address Card */}
               {siteAddress && (
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
+                <div className="bg-white border border-[#E2E8F0]/70 p-5 rounded-2xl flex items-start gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg shrink-0">
                     <i className="fas fa-map-marker-alt"></i>
                   </div>
                   <div>
-                    <h5 className="font-bold text-[#111] text-sm uppercase tracking-wide">Main Address</h5>
-                    <p className="text-xs text-[#64748B] font-medium mt-1 leading-relaxed whitespace-pre-line">
+                    <h5 className="font-extrabold text-[#0F172A] text-xs uppercase tracking-wider">Headquarters</h5>
+                    <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed whitespace-pre-line">
                       {siteAddress}
                     </p>
+                    <span className="text-[9px] text-slate-400 font-extrabold uppercase mt-1.5 block">Access by Appointment Only</span>
                   </div>
                 </div>
               )}
+            </motion.div>
 
-              {/* VIP Concierge Phone info block */}
-              {supportPhone && (
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
-                    <i className="fas fa-phone-alt"></i>
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-[#111] text-sm uppercase tracking-wide">Concierge Line</h5>
-                    <p className="text-xs text-[#64748B] font-medium mt-1">
-                      <a href={`tel:${supportPhone.replace(/[^\d+]/g, '')}`} className="text-[#64748B] hover:text-primary transition-colors">{supportPhone}</a>
-                    </p>
-                    <span className="text-[10px] text-green-600 font-extrabold uppercase mt-1 block">Mon-Sat, 9AM - 8PM EST</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Email support block */}
-              {supportEmail && (
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
-                    <i className="fas fa-envelope"></i>
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-[#111] text-sm uppercase tracking-wide">Digital Support</h5>
-                    <p className="text-xs text-primary font-bold mt-1">
-                      <a href={`mailto:${supportEmail}`} className="text-primary hover:underline">{supportEmail}</a>
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Premium Guarantee card */}
-            <div className="bg-[#111] rounded-3xl p-6 lg:p-8 text-white relative overflow-hidden shadow-xl grow flex flex-col justify-end min-h-[220px]">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl pointer-events-none">
-                <i className="fas fa-shield-alt"></i>
-              </div>
-              <span className="text-[0.6rem] text-primary font-black uppercase tracking-[3px] mb-2 block">Premium Guarantee</span>
-              <h4 className="text-xl font-black uppercase tracking-tight leading-snug">
-                Response Within<br />2 Hours Guaranteed
+            {/* Interactive FAQs Accordion Widget */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="bg-white border border-[#E2E8F0]/70 p-6 rounded-3xl shadow-[0_12px_30px_rgba(0,0,0,0.02)] flex flex-col gap-4 mt-4 lg:mt-0"
+            >
+              <h4 className="text-xs font-black text-slate-400 uppercase tracking-[2px] border-b border-slate-50 pb-3 px-1">
+                Frequently Answered
               </h4>
-              <p className="text-[0.75rem] text-[#AAA] font-medium mt-3 leading-relaxed">
-                All client inquiries receive express handling from our dedicated customer support specialist group.
-              </p>
-            </div>
+              <div className="flex flex-col gap-3">
+                {faqs.map((faq, idx) => (
+                  <div key={idx} className="border-b border-[#F8FAFC] last:border-b-0 pb-3 last:pb-0">
+                    <button
+                      onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+                      className="w-full flex items-center justify-between text-left text-xs font-extrabold text-slate-800 hover:text-primary transition-colors focus:outline-none"
+                    >
+                      <span className="flex gap-2">
+                        <span className="text-primary/45 font-black">?</span>
+                        {faq.q}
+                      </span>
+                      <i className={`fas fa-chevron-down text-[10px] text-slate-400 transition-transform duration-300 ${expandedFaq === idx ? 'rotate-180 text-primary' : ''}`}></i>
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {expandedFaq === idx && (
+                        <motion.div
+                          key="content"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <p className="text-[11px] text-slate-600 font-semibold mt-2.5 pl-4 leading-relaxed border-l-2 border-primary/20">
+                            {faq.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
 
           {/* Right Column: Sleek Contact Form Card */}
-          <div className="lg:col-span-7">
-            <div className="bg-white rounded-[32px] p-6 lg:p-10 shadow-[0_10px_50px_rgba(0,0,0,0.03)] border border-[#F1F5F9] h-full flex flex-col justify-center">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="lg:col-span-7"
+          >
+            <div className="bg-white rounded-[32px] p-6 lg:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.03)] border border-[#E2E8F0]/70 h-full flex flex-col justify-center">
               {isSubmitted ? (
                 // Success screen inside the card
                 <div className="text-center py-12 flex flex-col items-center justify-center animate-fade-in">
-                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-6 shadow-sm">
+                  <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 mb-6 shadow-sm">
                     <i className="fas fa-check-circle text-4xl"></i>
                   </div>
-                  <h3 className="text-2xl font-black text-[#111] uppercase tracking-tight mb-2">Message Received</h3>
+                  <h3 className="text-xl lg:text-2xl font-black text-[#0F172A] uppercase tracking-tight mb-2">Message Saved</h3>
                   <p className="text-[#64748B] font-medium text-sm max-w-[380px] leading-relaxed mx-auto">
-                    Thank you for contacting us. Your message has been saved and routed to our customer support division. We will email you back shortly.
+                    Thank you for contacting us. Your message has been safely saved and routed to our dedicated division. We will email you back shortly.
                   </p>
                   <button
                     onClick={() => setIsSubmitted(false)}
-                    className="mt-8 bg-[#111] text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg hover:bg-primary hover:-translate-y-0.5 transition-all"
+                    className="mt-8 bg-primary text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-red-100 hover:bg-[#B20000] hover:-translate-y-0.5 transition-all"
                   >
                     Send Another Message
                   </button>
@@ -163,7 +243,7 @@ export default function ContactUsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                     {/* Name field */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px]">
+                      <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px] ml-0.5">
                         Full Name <span className="text-primary">*</span>
                       </label>
                       <input
@@ -179,7 +259,7 @@ export default function ContactUsPage() {
 
                     {/* Phone field */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px]">
+                      <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px] ml-0.5">
                         Phone Number
                       </label>
                       <input
@@ -193,7 +273,7 @@ export default function ContactUsPage() {
 
                   {/* Email field */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px]">
+                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px] ml-0.5">
                       Email Address <span className="text-primary">*</span>
                     </label>
                     <input
@@ -215,7 +295,7 @@ export default function ContactUsPage() {
 
                   {/* Subject field */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px]">
+                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px] ml-0.5">
                       Subject <span className="text-primary">*</span>
                     </label>
                     <input
@@ -231,7 +311,7 @@ export default function ContactUsPage() {
 
                   {/* Message field */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px]">
+                    <label className="text-[0.65rem] font-extrabold text-[#64748B] uppercase tracking-[1.5px] ml-0.5">
                       Your Message <span className="text-primary">*</span>
                     </label>
                     <textarea
@@ -269,7 +349,7 @@ export default function ContactUsPage() {
                 </form>
               )}
             </div>
-          </div>
+          </motion.div>
           
         </div>
       </div>

@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CategoriesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { name: string; description?: string; parentId?: string; imageUrl?: string; isActive?: boolean }) {
+  async create(data: { name: string; description?: string; parentId?: string; imageUrl?: string; isActive?: boolean; isFeatured?: boolean }) {
     let slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     
     // Ensure slug uniqueness
@@ -22,7 +22,7 @@ export class CategoriesService {
     });
   }
 
-  async findAll(params?: { includePastCount?: boolean; includeActiveCount?: boolean; search?: string; page?: number; limit?: number; tree?: boolean }) {
+  async findAll(params?: { includePastCount?: boolean; includeActiveCount?: boolean; search?: string; page?: number; limit?: number; tree?: boolean; isFeatured?: boolean }) {
     this.prisma.$connect();
 
     if (params?.tree) {
@@ -42,6 +42,9 @@ export class CategoriesService {
     const where: any = {};
     if (params?.search) {
       where.name = { contains: params.search, mode: 'insensitive' };
+    }
+    if (params?.isFeatured !== undefined) {
+      where.isFeatured = params.isFeatured;
     }
 
     const [items, total] = await Promise.all([

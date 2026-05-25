@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import AuctionCard from '@/components/features/AuctionCard';
 import CategoryCard from '@/components/features/CategoryCard';
 import { auctionService } from '@/services/auction.service';
@@ -8,11 +11,7 @@ import { basketService, categoryService } from '@/services/catalog.service';
 import { useAppQuery } from '@/hooks/useApp';
 
 const TitleSeparator = () => (
-  <div className="flex items-center justify-center gap-[15px] max-w-[250px] mx-auto">
-    <span className="h-[1.5px] bg-[#e0e0e0] grow"></span>
-    <i className="fas fa-gavel text-primary text-base"></i>
-    <span className="h-[1.5px] bg-[#e0e0e0] grow"></span>
-  </div>
+  <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 mx-auto rounded-full mt-4 mb-6" />
 );
 
 const DEFAULT_CATEGORY_IMAGES: { [key: string]: string } = {
@@ -41,25 +40,20 @@ export default function HomePage() {
   );
 
   const { data: basketsData, isLoading: basketsLoading } = useAppQuery(['homepage-baskets'], () =>
-    basketService.findAll({ limit: 6, isActive: 'true' })
+    basketService.findAll({ limit: 6, isActive: 'true', isFeatured: 'true' })
   );
 
-  const { data: categoriesData } = useAppQuery(['homepage-categories'], () =>
-    categoryService.findAll()
+  const { data: categoriesData, isLoading: categoriesLoading } = useAppQuery(['homepage-categories'], () =>
+    categoryService.findAll({ isFeatured: true })
   );
 
   const auctions = (auctionsData as any)?.items || [];
   const baskets = (basketsData as any)?.items || [];
   const categoriesRaw = categoriesData ? (Array.isArray(categoriesData) ? categoriesData : (categoriesData as any).items || []) : [];
+  const activeCategories = categoriesRaw.filter((cat: any) => cat.isActive !== false);
 
-  const displayCategories = categoriesRaw.length > 0 ? categoriesRaw.slice(0, 6) : [
-    { id: '1', name: 'Vintage Cars', slug: 'vintage-cars', imageUrl: '' },
-    { id: '2', name: 'Luxury Watches', slug: 'luxury-watches', imageUrl: '' },
-    { id: '3', name: 'Gemstones', slug: 'gemstones', imageUrl: '' },
-    { id: '4', name: 'Motorcycles', slug: 'motorcycles', imageUrl: '' },
-    { id: '5', name: 'Handicrafts', slug: 'handicrafts', imageUrl: '' },
-    { id: '6', name: 'Electrical Appliances', slug: 'electrical-appliances', imageUrl: '' },
-  ];
+  const showCategoriesSection = categoriesLoading || activeCategories.length > 0;
+  const showBasketsSection = basketsLoading || baskets.length > 0;
 
   return (
     <main className="flex-1 w-full animate-fade-in overflow-x-hidden">
@@ -111,7 +105,9 @@ export default function HomePage() {
       <section id="latest-auctions" className="bg-white pt-[60px] lg:pt-[100px] pb-12 lg:pb-20">
         <div className="container">
           <div className="text-center mb-[40px] lg:mb-[60px]">
-            <h2 className="text-[1.8rem] lg:text-[2.6rem] font-extrabold text-[#111] uppercase tracking-tight mb-3">LATEST AUCTIONS</h2>
+            <h2 className="text-[2.2rem] lg:text-[3.2rem] font-black text-center tracking-tight text-[#0F172A] leading-tight">
+              Latest <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Auctions</span>
+            </h2>
             <TitleSeparator />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
@@ -134,125 +130,266 @@ export default function HomePage() {
       </section>
 
       {/* ===== AUCTION BASKETS SECTION ===== */}
-      <section id="auction-baskets" className="bg-white py-[60px] lg:py-[100px] border-b border-[#F1F5F9]">
-        <div className="container">
-          <div className="text-center mb-[40px] lg:mb-[60px]">
-            <p className="text-primary text-[0.7rem] font-black uppercase tracking-[4px] mb-3">Browse by Event</p>
-            <h2 className="text-[1.8rem] lg:text-[2.6rem] font-extrabold text-[#111] uppercase tracking-tight mb-3">AUCTION BASKETS</h2>
-            <TitleSeparator />
-            <p className="text-[#64748B] mt-4 text-sm font-medium max-w-[500px] mx-auto leading-relaxed">
-              Explore curated auction groups organized by location and event
-            </p>
-          </div>
-
-          {basketsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="h-[360px] bg-[#F8FAFC] rounded-2xl border border-[#F1F5F9] animate-pulse"></div>
-              ))}
+      {showBasketsSection && (
+        <section id="auction-baskets" className="bg-white py-[60px] lg:py-[100px] border-b border-[#F1F5F9]">
+          <div className="container">
+            <div className="text-center mb-[40px] lg:mb-[60px]">
+              <h2 className="text-[2.2rem] lg:text-[3.2rem] font-black text-center tracking-tight text-[#0F172A] leading-tight">
+                Browse By <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Events</span>
+              </h2>
+              <TitleSeparator />
+              <p className="text-[#64748B] mt-4 text-sm lg:text-base font-medium max-w-[500px] mx-auto leading-relaxed px-4">
+                Explore curated auction groups organized by location and event
+              </p>
             </div>
-          ) : baskets.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {baskets.map((basket: any) => (
-                <Link
-                  key={basket.id}
-                  href={`/live-auctions?basket=${basket.slug || basket.id}`}
-                  className="relative min-h-[380px] rounded-2xl bg-cover bg-center overflow-hidden flex items-end no-underline transition-all duration-300 shadow-md hover:scale-[1.02] hover:shadow-xl group"
-                  style={{
-                    backgroundImage: `url("${
-                      basket.image && basket.image.trim() !== ''
-                        ? basket.image
-                        : 'https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=800'
-                    }")`,
-                  }}
-                >
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent z-10"></div>
 
-                  <div className="relative z-20 p-6 lg:p-8 w-full">
-                    <span className="text-[0.75rem] text-[#F39C12] font-black uppercase tracking-[2px] block mb-2">
-                      <i className="fas fa-layer-group mr-1.5"></i> {basket._count?.products || 0} Items
-                    </span>
-                    <h3 className="text-white text-2xl font-black mb-3 uppercase tracking-tight leading-tight">
-                      {basket.name}
-                    </h3>
-                    {basket.description && (
-                      <p className="text-white/70 text-xs font-medium leading-relaxed mb-4 line-clamp-2">
-                        {basket.description}
-                      </p>
-                    )}
-                    <span className="inline-block px-5 py-2 rounded-full border-2 border-white text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 group-hover:bg-white group-hover:text-black">
-                      View Auctions
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20 text-[#64748B]/60">
-              <i className="fas fa-layer-group text-5xl mb-4 block"></i>
-              <p className="font-bold text-sm uppercase tracking-widest">No auction baskets configured yet</p>
-              <p className="text-xs mt-1 text-[#64748B]/40">Admins can create baskets from the admin panel</p>
-            </div>
-          )}
-        </div>
-      </section>
+            {basketsLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-6 lg:gap-8">
+                {Array(6).fill(0).map((_, i) => (
+                  <div key={i} className="h-[220px] md:h-[320px] lg:h-[360px] bg-[#F8FAFC] rounded-2xl border border-[#F1F5F9] animate-pulse"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-6 lg:gap-8">
+                {baskets.map((basket: any) => (
+                  <Link
+                    key={basket.id}
+                    href={`/live-auctions?basket=${basket.slug || basket.id}`}
+                    className="relative min-h-[220px] md:min-h-[320px] lg:min-h-[380px] rounded-2xl bg-cover bg-center overflow-hidden flex items-end no-underline transition-all duration-300 shadow-md hover:scale-[1.02] hover:shadow-xl group"
+                    style={{
+                      backgroundImage: `url("${
+                        basket.image && basket.image.trim() !== ''
+                          ? basket.image
+                          : 'https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=800'
+                      }")`,
+                    }}
+                  >
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent z-10"></div>
 
-      {/* Upcoming Auctions Grid */}
-      <section id="categories-view" className="bg-[#F8FAFC] py-[60px] lg:py-[100px] border-y border-[#F1F5F9]">
-        <div className="container">
-          <div className="text-center mb-[40px] lg:mb-[60px]">
-            <h2 className="text-[1.8rem] lg:text-[2.6rem] font-extrabold text-[#111] uppercase tracking-tight mb-3">BROWSE CATEGORIES</h2>
-            <TitleSeparator />
+                    <div className="relative z-20 p-4 md:p-6 lg:p-8 w-full">
+                      <span className="text-[9px] md:text-[0.75rem] text-[#F39C12] font-black uppercase tracking-[1px] md:tracking-[2px] block mb-1 md:mb-2">
+                        <i className="fas fa-layer-group mr-1.5"></i> {basket._count?.products || 0} Items
+                      </span>
+                      <h3 className="text-white text-xs md:text-2xl font-black mb-1.5 md:mb-3 uppercase tracking-tight leading-tight">
+                        {basket.name}
+                      </h3>
+                      {basket.description && (
+                        <p className="text-white/70 text-[10px] md:text-xs font-medium leading-relaxed mb-3 md:mb-4 line-clamp-2 hidden md:block">
+                          {basket.description}
+                        </p>
+                      )}
+                      <span className="inline-block px-3 py-1.5 md:px-5 md:py-2 rounded-full border-2 border-white text-white font-bold text-[9px] md:text-xs uppercase tracking-wider transition-all duration-300 group-hover:bg-white group-hover:text-black">
+                        View Auctions
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {displayCategories.map((cat: any) => {
-              const bgImage = cat.imageUrl && cat.imageUrl.trim() !== ''
-                ? cat.imageUrl
-                : (DEFAULT_CATEGORY_IMAGES[cat.slug] || 'https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=800');
-              
-              return (
-                <CategoryCard 
-                  key={cat.id} 
-                  title={cat.name} 
-                  image={bgImage} 
-                  productsCount={cat._count?.products}
-                  location="Active Listings"
-                />
-              );
-            })}
+        </section>
+      )}
+
+      {/* Upcoming Auctions Grid (Browse Categories) */}
+      {showCategoriesSection && (
+        <section id="categories-view" className="bg-[#F8FAFC] py-[60px] lg:py-[100px] border-y border-[#F1F5F9]">
+          <div className="container">
+            <div className="text-center mb-[40px] lg:mb-[60px]">
+              <h2 className="text-[2.2rem] lg:text-[3.2rem] font-black text-center tracking-tight text-[#0F172A] leading-tight">
+                Browse <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Categories</span>
+              </h2>
+              <TitleSeparator />
+            </div>
+            {categoriesLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-6 lg:gap-8">
+                {Array(6).fill(0).map((_, i) => (
+                  <div key={i} className="h-[200px] md:h-[280px] lg:h-[320px] bg-white rounded-2xl md:rounded-3xl border border-[#F1F5F9] animate-pulse"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-6 lg:gap-8">
+                {activeCategories.slice(0, 6).map((cat: any) => {
+                  const bgImage = cat.imageUrl && cat.imageUrl.trim() !== ''
+                    ? cat.imageUrl
+                    : (DEFAULT_CATEGORY_IMAGES[cat.slug] || 'https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=800');
+                  
+                  return (
+                    <CategoryCard 
+                      key={cat.id} 
+                      title={cat.name} 
+                      slug={cat.slug}
+                      image={bgImage} 
+                      productsCount={cat._count?.products}
+                      location="Active Listings"
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* How It Works Section */}
-      <section className="bg-white py-[60px] lg:py-[100px]">
-        <div className="container">
-          <h2 className="text-[2rem] lg:text-[2.8rem] font-extrabold text-center mb-2 tracking-tight text-[#111]">How It Works</h2>
-          <p className="text-center text-[#64748B] mb-10 lg:mb-16 max-w-[600px] mx-auto text-sm lg:text-base font-medium px-4 leading-relaxed">Experience a seamless auction process from registration to ownership.</p>
+      <section className="bg-slate-50/50 py-[48px] md:py-[80px] lg:py-[120px] relative overflow-hidden border-t border-[#F1F5F9]">
+        {/* Soft Background Blobs for Modern Aesthetic */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-500/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <style>{`
+          @keyframes dash {
+            to {
+              stroke-dashoffset: -40;
+            }
+          }
+          .animate-dash {
+            animation: dash 4s linear infinite;
+            stroke-dashoffset: 0;
+          }
+        `}</style>
+
+        <div className="container relative z-10">
+          {/* Header Area */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10 md:mb-16 lg:mb-24"
+          >
+            <span className="text-[10px] font-black text-primary uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
+              Process Guide
+            </span>
+            <h2 className="text-[1.8rem] md:text-[2.2rem] lg:text-[3.2rem] font-black text-center tracking-tight text-[#0F172A] leading-tight">
+              How It <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Works</span>
+            </h2>
+            <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 mx-auto rounded-full mt-3 mb-3 md:mt-4 md:mb-4" />
+            <p className="text-center text-[#475569] max-w-[550px] mx-auto text-xs sm:text-sm lg:text-base font-medium leading-relaxed px-4">
+              Experience a highly secured, transparent, and seamless auction journey from registration to ownership.
+            </p>
+          </motion.div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { id: '01', title: 'Registration', bg: '#FFF9F2', icon: 'fa-user-check', color: '#E67E22', bullet1: 'Quick Signup', bullet2: 'KYC Verification', bullet3: 'Secure Profile' },
-              { id: '02', title: 'Select Product', bg: '#F4FCF0', icon: 'fa-search-location', color: '#27AE60', bullet1: 'Browse Categories', bullet2: 'Inspection Reports', bullet3: 'Compare Items' },
-              { id: '03', title: 'Go to Bidding', bg: '#FFF4F6', icon: 'fa-gavel', color: '#C0392B', bullet1: 'Live Bidding', bullet2: 'Instant Alerts', bullet3: 'Auto-Bid Support' },
-              { id: '04', title: 'Make Payment', bg: '#F2F9FF', icon: 'fa-wallet', color: '#2980B9', bullet1: 'Secure Checkout', bullet2: 'Escrow Service', bullet3: 'Final Delivery' }
-            ].map((step) => (
-              <div key={step.id} className="relative flex flex-col p-8 rounded-2xl border border-transparent hover:border-[#E2E8F0] hover:shadow-md transition-all duration-300" style={{ backgroundColor: step.bg }}>
-                <span className="absolute top-6 right-8 font-extrabold text-[0.65rem] text-black/10 tracking-[2px] uppercase">STEP {step.id}</span>
-                <div className="bg-white w-14 h-14 rounded-xl flex items-center justify-center shadow-sm mb-8">
-                  <i className={`fas ${step.icon} text-xl lg:text-2xl`} style={{ color: step.color }}></i>
-                </div>
-                <h3 className="text-lg lg:text-xl font-extrabold mb-6 text-[#111]">{step.title}</h3>
-                <ul className="flex flex-col gap-3">
-                  {[step.bullet1, step.bullet2, step.bullet3].map((bullet, bIdx) => (
-                    <li key={bIdx} className="text-[0.8rem] lg:text-[0.85rem] text-[#64748B] font-semibold flex gap-2.5 items-center leading-tight">
-                        <span className="text-[#111] font-black opacity-20 text-[0.65rem]">0{bIdx + 1}.</span> {bullet}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="relative">
+            {/* SVG Animated Connector Line (Desktop Only) */}
+            <div className="absolute top-[90px] left-[12%] right-[12%] h-[4px] hidden xl:block z-0 pointer-events-none">
+              <svg className="w-full h-[40px] overflow-visible" fill="none">
+                <path
+                  d="M 0 20 C 150 40, 300 0, 450 20 C 600 40, 750 0, 950 20" 
+                  stroke="url(#flow-gradient)"
+                  strokeWidth="3.5"
+                  strokeDasharray="9,9"
+                  className="animate-dash"
+                />
+                <defs>
+                  <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#FF9F43" />
+                    <stop offset="33%" stopColor="#1DD1A1" />
+                    <stop offset="66%" stopColor="#FF6B6B" />
+                    <stop offset="100%" stopColor="#2E86DE" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
+            {/* Grid of Steps */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-8">
+              {[
+                { 
+                  id: '01', 
+                  title: 'Registration', 
+                  bgLight: '#FFF9F2', 
+                  icon: 'fa-user-check', 
+                  color: '#FF9F43', 
+                  shadowRGB: '255, 159, 67',
+                  bullets: ['Quick Signup', 'KYC Verification', 'Secure Profile'] 
+                },
+                { 
+                  id: '02', 
+                  title: 'Select Product', 
+                  bgLight: '#EEFDF8', 
+                  icon: 'fa-search-location', 
+                  color: '#1DD1A1', 
+                  shadowRGB: '29, 209, 161',
+                  bullets: ['Browse Categories', 'Inspection Reports', 'Compare Items'] 
+                },
+                { 
+                  id: '03', 
+                  title: 'Go to Bidding', 
+                  bgLight: '#FFF5F5', 
+                  icon: 'fa-gavel', 
+                  color: '#FF6B6B', 
+                  shadowRGB: '255, 107, 107',
+                  bullets: ['Live Bidding', 'Instant Alerts', 'Auto-Bid Support'] 
+                },
+                { 
+                  id: '04', 
+                  title: 'Make Payment', 
+                  bgLight: '#EDF5FC', 
+                  icon: 'fa-credit-card', 
+                  color: '#2E86DE', 
+                  shadowRGB: '46, 134, 222',
+                  bullets: ['Secure Checkout', 'Escrow Service', 'Final Delivery'] 
+                }
+              ].map((step, idx) => (
+                <motion.div 
+                  key={step.id}
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, delay: idx * 0.15, type: 'spring', stiffness: 100 }}
+                  whileHover={{ 
+                    y: -12, 
+                    scale: 1.015,
+                    boxShadow: `0 20px 40px -15px rgba(${step.shadowRGB}, 0.2), 0 0 0 1px rgba(${step.shadowRGB}, 0.1)` 
+                  }}
+                  className="group relative flex flex-col p-6 md:p-8 rounded-3xl bg-white border border-[#E2E8F0]/70 shadow-[0_12px_30px_-15px_rgba(0,0,0,0.04)] transition-all duration-300 z-10"
+                  style={{
+                    '--shadow-rgb': step.shadowRGB,
+                    '--color-primary': step.color,
+                    '--color-light': step.bgLight
+                  } as React.CSSProperties}
+                >
+                  {/* Step Capsule & Step Ghost Counter */}
+                  <div className="flex justify-between items-center mb-5 md:mb-8">
+                    <span className="text-[9px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full text-[var(--color-primary)] bg-[var(--color-light)] border border-[var(--color-primary)]/10">
+                      STEP {step.id}
+                    </span>
+                    <span className="text-3xl font-black text-slate-100/90 group-hover:text-[var(--color-light)] select-none transition-colors duration-300">
+                      0{step.id}
+                    </span>
+                  </div>
+
+                  {/* Icon with Glowing Gradient Circle */}
+                  <div 
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-md transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
+                    style={{
+                      background: `linear-gradient(135deg, ${step.color}, ${step.color}DD)`,
+                      boxShadow: `0 10px 20px -8px rgba(${step.shadowRGB}, 0.5)`
+                    }}
+                  >
+                    <i className={`fas ${step.icon} text-white text-lg md:text-2xl`}></i>
+                  </div>
+
+                  {/* Step Title */}
+                  <h3 className="text-base md:text-lg lg:text-xl font-bold mb-2.5 md:mb-4 text-[#0F172A] tracking-tight transition-colors duration-300 group-hover:text-[var(--color-primary)]">
+                    {step.title}
+                  </h3>
+
+                  {/* Checklist Sub-items */}
+                  <ul className="flex flex-col gap-2.5 md:gap-3.5 mt-auto pt-3 md:pt-4 border-t border-[#F8FAFC]">
+                    {step.bullets.map((bullet, bIdx) => (
+                      <li key={bIdx} className="text-[12px] md:text-[13px] text-[#475569] font-semibold flex gap-2.5 md:gap-3 items-center leading-tight transition-colors duration-300 group-hover:text-slate-800">
+                        <span className="w-4.5 h-4.5 md:w-5 md:h-5 rounded-full flex items-center justify-center text-[8px] md:text-[9px] bg-slate-50 text-slate-400 group-hover:bg-[var(--color-light)] group-hover:text-[var(--color-primary)] transition-all duration-300">
+                          <i className="fas fa-check"></i>
+                        </span> 
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

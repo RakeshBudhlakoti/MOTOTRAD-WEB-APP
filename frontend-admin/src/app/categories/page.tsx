@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { categoriesService } from '@/services/admin.service';
-import { Layers, Plus, Search, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Layers, Plus, Search, Edit, Trash2, Image as ImageIcon, ToggleLeft, ToggleRight } from 'lucide-react';
 import Button from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
 import { TableSkeleton } from '@/components/common/Skeleton';
@@ -43,6 +43,19 @@ export default function CategoriesPage() {
     onError: (err: any) => {
       console.error(err);
       toast.error(err.response?.data?.message || err.message || 'An error occurred while deleting.');
+    }
+  });
+
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: (category: any) => categoriesService.update(category.id, { isFeatured: !category.isFeatured }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-categories-flat'] });
+      toast.success('Featured status updated!');
+    },
+    onError: (err: any) => {
+      console.error(err);
+      toast.error('Failed to update featured status.');
     }
   });
 
@@ -89,16 +102,17 @@ export default function CategoriesPage() {
                   <th>Category Name</th>
                   <th>Slug</th>
                   <th>Status</th>
+                  <th>Featured</th>
                   <th>Product Count</th>
                   <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
-                  <TableSkeleton columns={6} rows={5} />
+                  <TableSkeleton columns={7} rows={5} />
                 ) : !categories?.items || categories.items.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                    <td colSpan={7} className="py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
                       No categories defined.
                     </td>
                   </tr>
@@ -124,6 +138,20 @@ export default function CategoriesPage() {
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${cat.isActive !== false ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                           {cat.isActive !== false ? 'Active' : 'Inactive'}
                         </span>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${cat.isFeatured ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200'}`}>
+                            {cat.isFeatured ? 'Featured' : 'Standard'}
+                          </span>
+                          <button
+                            onClick={() => toggleFeaturedMutation.mutate(cat)}
+                            className={`transition-colors ${cat.isFeatured ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-slate-400'}`}
+                            title="Toggle Featured Homepage Visibility"
+                          >
+                            {cat.isFeatured ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                          </button>
+                        </div>
                       </td>
                       <td>
                          <span className="text-xs font-black text-slate-700">{cat._count?.products || 0}</span>

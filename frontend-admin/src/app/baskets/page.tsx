@@ -50,6 +50,18 @@ export default function BasketsPage() {
     },
   });
 
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: (basket: any) => basketsService.update(basket.id, { isFeatured: !basket.isFeatured }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-baskets'] });
+      toast.success('Featured status updated');
+    },
+    onError: (err: any) => {
+      console.error(err);
+      toast.error('Failed to update featured status');
+    }
+  });
+
   const baskets = basketsData?.items || [];
   const meta = basketsData?.meta;
 
@@ -121,15 +133,16 @@ export default function BasketsPage() {
                   <th>Slug</th>
                   <th>Products</th>
                   <th>Status</th>
+                  <th>Featured</th>
                   <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
-                  <TableSkeleton columns={6} rows={6} />
+                  <TableSkeleton columns={7} rows={6} />
                 ) : baskets.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                    <td colSpan={7} className="py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
                       No buckets found. Create your first bucket!
                     </td>
                   </tr>
@@ -173,6 +186,20 @@ export default function BasketsPage() {
                             className={`transition-colors ${basket.isActive ? 'text-green-500 hover:text-green-600' : 'text-slate-300 hover:text-slate-400'}`}
                           >
                             {basket.isActive ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                          </button>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${basket.isFeatured ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200'}`}>
+                            {basket.isFeatured ? 'Featured' : 'Standard'}
+                          </span>
+                          <button
+                            onClick={() => toggleFeaturedMutation.mutate(basket)}
+                            className={`transition-colors ${basket.isFeatured ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-slate-400'}`}
+                            title="Toggle Featured Homepage Visibility"
+                          >
+                            {basket.isFeatured ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                           </button>
                         </div>
                       </td>

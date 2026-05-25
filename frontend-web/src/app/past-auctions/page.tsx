@@ -18,7 +18,8 @@ function PastAuctionsContent() {
 
   // Fetch categories for the dropdown with counts
   const { data: categoriesData } = useAppQuery(['categories-past'], () => categoryService.findAll({ includePastCount: true }));
-  const categories = (categoriesData as any) || [];
+  const categoriesRaw = (categoriesData as any)?.items || (Array.isArray(categoriesData) ? categoriesData : []);
+  const categories = categoriesRaw.filter((cat: any) => cat.isActive !== false);
 
   // Fetch past auctions (status: PAST)
   const { data: auctionsData, isLoading } = useAppQuery(['past-auctions', page, categoryFilter], () => 
@@ -51,14 +52,33 @@ function PastAuctionsContent() {
     <main className="flex-1 w-full animate-fade-in bg-[#F8FAFC] py-8 lg:py-16">
       <div className="container">
         {/* Page Header */}
-        <div className="mb-8 lg:mb-12">
-            <h1 className="text-[2rem] lg:text-[2.8rem] font-black text-[#111] uppercase tracking-tighter mb-3 leading-tight">
-                {categoryFilter ? `Past Auctions: ${categoryFilter.replace(/-/g, ' ')}` : 'Past Auctions'}
-            </h1>
-            <div className="h-1.5 w-24 bg-primary rounded-full shadow-[0_2px_10px_rgba(211,47,47,0.3)]"></div>
-            <p className="mt-4 text-[#64748B] font-medium max-w-[600px]">
-                Explore our successful sales and historical auction results. See what items have recently found new homes.
-            </p>
+        <div className="mb-10 lg:mb-16">
+          <span className="text-primary text-[10px] font-black uppercase tracking-[3px] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 inline-block mb-3.5">
+            Sales History
+          </span>
+          <h1 className="text-[2.2rem] lg:text-[3.2rem] font-black text-[#0F172A] tracking-tight leading-tight mb-3">
+            {categoryFilter ? (
+              (() => {
+                const catName = categoryFilter.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const words = catName.split(' ');
+                const lastWord = words.pop();
+                return (
+                  <>
+                    Past Auctions: {words.join(' ')}{words.length > 0 ? ' ' : ''}
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">{lastWord}</span>
+                  </>
+                );
+              })()
+            ) : (
+              <>
+                Past <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">Auctions</span>
+              </>
+            )}
+          </h1>
+          <div className="w-12 h-1 bg-gradient-to-r from-primary to-indigo-600 rounded-full mt-4 mb-4" />
+          <p className="mt-4 text-[#475569] text-sm lg:text-base font-medium max-w-[600px] leading-relaxed">
+            Explore our successful sales and historical auction results. See what items have recently found new homes.
+          </p>
         </div>
 
         {/* Filter Bar */}
