@@ -1,5 +1,7 @@
 import { PrismaClient, UserStatus, KycStatus, KycDocType, ItemCondition, ProductStatus, AuctionStatus, AttrType } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { seedSettings, seedBaskets, seedCategories } from './seed-data';
+
 if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL_PROD) {
   process.env.DATABASE_URL = process.env.DATABASE_URL_PROD;
 } else if (!process.env.DATABASE_URL) {
@@ -190,92 +192,90 @@ async function main() {
     },
   });
 
-  // 3. Create Categories
-  console.log('Creating categories...');
-  const carCategory = await prisma.category.upsert({
+  // 3. Create Categories and Attributes
+  console.log('Seeding categories and attributes...');
+  for (const cat of seedCategories) {
+    const upsertedCat = await prisma.category.upsert({
+      where: { slug: cat.slug },
+      update: {
+        name: cat.name,
+        description: cat.description,
+        imageUrl: cat.imageUrl,
+        isActive: cat.isActive,
+        isFeatured: cat.isFeatured,
+      },
+      create: {
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description,
+        imageUrl: cat.imageUrl,
+        isActive: cat.isActive,
+        isFeatured: cat.isFeatured,
+      },
+    });
+
+    for (const attr of cat.attributes) {
+      await prisma.categoryAttribute.upsert({
+        where: { categoryId_name: { categoryId: upsertedCat.id, name: attr.name } },
+        update: {
+          type: attr.type,
+          isRequired: attr.isRequired,
+          options: attr.options ?? undefined,
+        },
+        create: {
+          categoryId: upsertedCat.id,
+          name: attr.name,
+          type: attr.type,
+          isRequired: attr.isRequired,
+          options: attr.options ?? undefined,
+        },
+      });
+    }
+  }
+
+  // Fetch the created category attributes for product creation compatibility
+  const carCategory = await prisma.category.findUnique({
     where: { slug: 'classic-cars' },
-    update: { isFeatured: true },
-    create: {
-      name: 'Classic Cars',
-      slug: 'classic-cars',
-      description: 'Vintage and classic automobiles',
-      isFeatured: true,
-    },
+    include: { attributes: true },
   });
-
-  const carAttributesData = [
-    { name: 'Make', type: AttrType.STRING, isRequired: true },
-    { name: 'Model', type: AttrType.STRING, isRequired: true },
-    { name: 'Year', type: AttrType.NUMBER, isRequired: true },
-    { name: 'Mileage', type: AttrType.NUMBER, isRequired: true },
-    { name: 'Transmission', type: AttrType.ENUM, options: ['Manual', 'Automatic'] },
-  ];
-
-  const carAttributes = [];
-  for (const attr of carAttributesData) {
-    const upserted = await prisma.categoryAttribute.upsert({
-      where: { categoryId_name: { categoryId: carCategory.id, name: attr.name } },
-      update: {},
-      create: {
-        categoryId: carCategory.id,
-        name: attr.name,
-        type: attr.type,
-        isRequired: attr.isRequired,
-        options: attr.options,
-      },
-    });
-    carAttributes.push(upserted);
-  }
-
-  (carCategory as any).attributes = carAttributes;
-
-  const motoCategory = await prisma.category.upsert({
+  const motoCategory = await prisma.category.findUnique({
     where: { slug: 'motorcycles' },
-    update: { isFeatured: true },
-    create: {
-      name: 'Motorcycles',
-      slug: 'motorcycles',
-      description: 'Two-wheeled machines',
-      isFeatured: true,
-    },
+    include: { attributes: true },
   });
 
-  const motoAttributesData = [
-    { name: 'Brand', type: AttrType.STRING, isRequired: true },
-    { name: 'Engine CC', type: AttrType.NUMBER, isRequired: true },
-    { name: 'Type', type: AttrType.ENUM, options: ['Sport', 'Cruiser', 'Dirt'] },
-  ];
+  const carAttributes = carCategory ? carCategory.attributes : [];
+  const motoAttributes = motoCategory ? motoCategory.attributes : [];
 
-  const motoAttributes = [];
-  for (const attr of motoAttributesData) {
-    const upserted = await prisma.categoryAttribute.upsert({
-      where: { categoryId_name: { categoryId: motoCategory.id, name: attr.name } },
-      update: {},
-      create: {
-        categoryId: motoCategory.id,
-        name: attr.name,
-        type: attr.type,
-        isRequired: attr.isRequired,
-        options: attr.options,
+  // 3.4. Create Baskets
+  console.log('Seeding baskets...');
+  for (const basket of seedBaskets) {
+    await prisma.basket.upsert({
+      where: { slug: basket.slug },
+      update: {
+        name: basket.name,
+        description: basket.description,
+        image: basket.image,
+        isActive: basket.isActive,
+        isFeatured: basket.isFeatured,
       },
+      create: basket,
     });
-    motoAttributes.push(upserted);
   }
-
-  (motoCategory as any).attributes = motoAttributes;
 
   // 3.5. Create Settings
   console.log('Seeding settings...');
-  await prisma.setting.upsert({
-    where: { key: 'ALLOW_BUY_NOW_AFTER_BIDS' },
-    update: {},
-    create: {
-      key: 'ALLOW_BUY_NOW_AFTER_BIDS',
-      value: 'false',
-      isPublic: true,
-      description: 'Allow Buy Now After Bids',
-    },
-  });
+  for (const setting of seedSettings) {
+    await prisma.setting.upsert({
+      where: { key: setting.key },
+      update: {
+        value: setting.value,
+        description: setting.description,
+        isPublic: setting.isPublic,
+      },
+      create: setting,
+    });
+  }
 
   // 4. Create Products & Auctions
   console.log('Creating products and auctions...');
