@@ -33,7 +33,7 @@ export class HealthController {
       () => this.redis.isHealthy('redis'),
       () => this.s3.isHealthy('s3'),
       () => this.memory.checkHeap('memory_heap', 500 * 1024 * 1024), // 500MB for dev
-      () => this.disk.checkStorage('storage', { path: 'C:\\', thresholdPercent: 0.9 }), // Windows path
+      () => this.disk.checkStorage('storage', { path: process.platform === 'win32' ? 'C:\\' : '/', thresholdPercent: 0.9 }),
     ]);
   }
 }
