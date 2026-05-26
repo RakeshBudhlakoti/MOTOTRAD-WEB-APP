@@ -35,7 +35,16 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_basketId_fkey"
     ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Step 7: Remove old optionId FK from Product (set to null first for safety)
-UPDATE "Product" SET "optionId" = NULL WHERE "optionId" IS NOT NULL;
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM information_schema.columns 
+        WHERE table_name='Product' AND column_name='optionId'
+    ) THEN
+        EXECUTE 'UPDATE "Product" SET "optionId" = NULL WHERE "optionId" IS NOT NULL';
+    END IF;
+END $$;
 
 -- Step 8: Drop old FK constraint on optionId
 ALTER TABLE "Product" DROP CONSTRAINT IF EXISTS "Product_optionId_fkey";
