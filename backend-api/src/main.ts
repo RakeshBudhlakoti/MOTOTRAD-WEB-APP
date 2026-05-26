@@ -1,7 +1,11 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
+
 if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL_PROD) {
   process.env.DATABASE_URL = process.env.DATABASE_URL_PROD;
 } else if (!process.env.DATABASE_URL) {
