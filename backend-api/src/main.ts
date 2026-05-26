@@ -2,13 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
-import * as os from 'os';
-
-// Auto-detect if running on AWS EC2 or production environment
-const hostname = os.hostname().toLowerCase();
-const isAWS = process.env.NODE_ENV === 'production' || hostname.includes('ec2') || hostname.includes('amazon') || !!process.env.AWS_EXECUTION_ENV;
-
-if (isAWS && process.env.DATABASE_URL_PROD) {
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL_PROD) {
   process.env.DATABASE_URL = process.env.DATABASE_URL_PROD;
 } else if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = "postgresql://postgres:password@127.0.0.1:5432/mototrad?schema=public";

@@ -1,5 +1,4 @@
 const { execSync } = require('child_process');
-const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,12 +26,9 @@ function loadEnv() {
 
 loadEnv();
 
-const hostname = os.hostname().toLowerCase();
-const isAWS = process.env.NODE_ENV === 'production' || hostname.includes('ec2') || hostname.includes('amazon') || !!process.env.AWS_EXECUTION_ENV;
-
-if (isAWS && process.env.DATABASE_URL_PROD) {
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL_PROD) {
   process.env.DATABASE_URL = process.env.DATABASE_URL_PROD;
-  console.log('🌐 AWS Environment detected. Routing Prisma connection to RDS database...');
+  console.log('🌐 Production Environment detected. Routing Prisma connection to RDS database...');
 } else {
   console.log('💻 Local Environment detected. Routing Prisma connection to local database...');
 }
