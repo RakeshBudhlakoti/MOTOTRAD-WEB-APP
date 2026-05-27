@@ -3,8 +3,19 @@
 import { useState, useEffect } from 'react';
 import { socketService } from '@/services/socket.service';
 import CommissionBreakdown from './CommissionBreakdown';
+import apiClient from '@/lib/axios';
 import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
+
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiry = payload.exp * 1000;
+    return Date.now() >= expiry;
+  } catch (e) {
+    return true;
+  }
+};
 
 interface AuctionBidderProps {
   auctionId: string;
@@ -16,6 +27,7 @@ interface AuctionBidderProps {
 export default function AuctionBidder({ auctionId, productId, currentBid, bidIncrement = 100 }: AuctionBidderProps) {
   const [bidAmount, setBidAmount] = useState<string>((currentBid + bidIncrement).toString());
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     // Sync bid amount if current bid changes externally
@@ -59,16 +71,64 @@ export default function AuctionBidder({ auctionId, productId, currentBid, bidInc
 
     if (!result.isConfirmed) return;
 
+    // Check if the token is expired and refresh it proactively if needed
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (token && isTokenExpired(token)) {
+        console.log('[AuctionBidder] Token is expired. Refreshing session...');
+        await apiClient.get('/users/profile'); // triggers axios interceptor to refresh
+        const refreshedToken = localStorage.getItem('accessToken');
+        if (refreshedToken) {
+          socketService.reconnectWithToken(refreshedToken);
+        }
+      }
+    } catch (err) {
+      console.error('[AuctionBidder] Session refresh failed:', err);
+    }
+
+    if (!socketService.isConnected()) {
+      toast.error('Bidding server is disconnected. Attempting to reconnect...');
+      socketService.connect();
+      return;
+    }
+
     setLoading(true);
+    setSuccess(false);
     socketService.emit('place_bid', { auctionId, amount });
     
-    // Use once to stop loading when response comes
-    socketService.once('bid_placed', () => setLoading(false));
-    socketService.once('bid_error', () => setLoading(false));
+    const handleSuccess = (data: any) => {
+      if (Number(data.amount) === amount) {
+        setLoading(false);
+        setSuccess(true);
+        cleanup();
+        setTimeout(() => {
+          setSuccess(false);
+        }, 5000);
+      }
+    };
+
+    const handleError = (data: any) => {
+      setLoading(false);
+      cleanup();
+      if (data?.message) {
+        toast.error(data.message);
+      } else {
+        toast.error('Failed to place bid');
+      }
+    };
+
+    const cleanup = () => {
+      socketService.off('bid_placed', handleSuccess);
+      socketService.off('bid_error', handleError);
+    };
+
+    socketService.on('bid_placed', handleSuccess);
+    socketService.on('bid_error', handleError);
 
     // Safety timeout to prevent infinite loading
     setTimeout(() => {
         setLoading(false);
+        cleanup();
     }, 10000);
   };
 
@@ -92,11 +152,26 @@ export default function AuctionBidder({ auctionId, productId, currentBid, bidInc
           />
         </div>
         <button 
-          className="bg-primary text-white px-10 lg:px-12 py-4 lg:py-0 rounded-xl font-black text-[1rem] lg:text-[1.1rem] shadow-[0_8px_20px_rgba(211,47,47,0.2)] transition-all hover:bg-primary-hover hover:-translate-y-1 active:scale-95 disabled:opacity-50" 
+          className={`px-10 lg:px-12 py-4 lg:py-0 rounded-xl font-black text-[1rem] lg:text-[1.1rem] transition-all duration-300 disabled:opacity-80 flex items-center justify-center gap-2 ${
+            success 
+              ? 'bg-green-600 text-white shadow-[0_8px_20px_rgba(22,163,74,0.3)] scale-100' 
+              : 'bg-primary text-white shadow-[0_8px_20px_rgba(211,47,47,0.2)] hover:bg-primary-hover hover:-translate-y-1 active:scale-95'
+          }`} 
           onClick={handleBid}
-          disabled={loading}
+          disabled={loading || success}
         >
-          {loading ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : 'Place Bid'}
+          {loading ? (
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : success ? (
+            <div className="flex items-center gap-2 animate-scale-up">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" className="animate-draw-check"></path>
+              </svg>
+              <span>Bid Submitted!</span>
+            </div>
+          ) : (
+            'Place Bid'
+          )}
         </button>
       </div>
       

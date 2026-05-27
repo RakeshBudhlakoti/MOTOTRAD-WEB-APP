@@ -58,8 +58,12 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
         token = token.replace('Bearer ', '');
         const payload = await this.jwtService.verifyAsync(token);
         client.data.user = payload;
+        this.logger.log(`WS Client authenticated: user=${payload.sub}`);
+      } else {
+        this.logger.warn(`WS Client connected as guest: no token provided`);
       }
     } catch (err) {
+      this.logger.error(`WS Connection Auth Failed: ${err.message}`);
       // Allow guest connections, user will be undefined
     }
   }

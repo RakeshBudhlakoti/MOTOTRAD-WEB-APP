@@ -70,7 +70,12 @@ export default function AuctionDetailPage() {
   );
 
   useEffect(() => {
-    socketService.emit('join_auction', { auctionId });
+    const handleJoin = () => {
+      socketService.emit('join_auction', { auctionId });
+    };
+
+    handleJoin();
+    socketService.on('connect', handleJoin);
     
     const handleSync = (data: any) => {
       if (data.onlineBidders) setOnlineBidders(data.onlineBidders);
@@ -165,6 +170,7 @@ export default function AuctionDetailPage() {
 
     return () => {
       socketService.emit('leave_auction', { auctionId });
+      socketService.off('connect', handleJoin);
       socketService.off('auction_sync', handleSync);
       socketService.off('online_bidders_count', handleBiddersCount);
       socketService.off('bid_placed', handleBidPlaced);
