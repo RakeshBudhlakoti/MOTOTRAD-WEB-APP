@@ -222,7 +222,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/auth/login" className="bg-gradient-to-r from-[#0F172A] to-[#273246] text-white text-[11px] font-black uppercase tracking-wider py-2.5 px-6 rounded-xl hover:from-primary hover:to-primary shadow-[0_4px_15px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_25px_rgba(211,47,47,0.15)] transition-all duration-300 hover:scale-105 active:scale-95 no-underline">
-                Access Terminal
+                Login/SignUp
               </Link>
             )}
           </div>
@@ -249,7 +249,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/auth/login" className="bg-gradient-to-r from-[#0F172A] to-[#273246] text-white text-[9px] uppercase tracking-wider py-2 px-3.5 rounded-lg shadow-sm hover:scale-105 transition-all no-underline font-extrabold">
-                Access
+                Login/SignUp
               </Link>
             )}
 
@@ -293,11 +293,13 @@ export default function Navbar() {
                 </div>
                 
                 <div className="flex flex-col gap-5">
-                  {navLinks.map((link) => (
+                  {navLinks
+                  .filter((link) => !(link.label === 'Membership' && !user))
+                  .map((link) => (
                     <Link 
                       key={link.path} 
                       href={link.path} 
-                      className={`text-[1.1rem] font-black no-underline transition-colors ${pathname === link.path ? 'text-primary' : 'text-slate-700 hover:text-primary'}`}
+                      className={`text-[1.1rem] font-normal no-underline transition-colors ${pathname === link.path ? 'text-primary' : 'text-slate-700 hover:text-primary'}`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {link.label}
@@ -313,7 +315,7 @@ export default function Navbar() {
                   </button>
                 ) : (
                   <Link href="/auth/login" className="bg-gradient-to-r from-primary to-indigo-600 text-white w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-md inline-block no-underline text-center" onClick={() => setIsMenuOpen(false)}>
-                    Access Terminal
+                    Login/SignUp
                   </Link>
                 )}
               </div>
