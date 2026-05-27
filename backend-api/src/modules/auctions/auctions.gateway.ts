@@ -169,6 +169,10 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
         include: { sellerProfile: { include: { kyc: true } } }
       });
 
+      if (!userData) {
+        throw new Error('User not found. Please log out and log back in.');
+      }
+
       // Pro Membership Enforcement
       if (!userData.isProMember) {
         throw new Error('Pro Membership required to place bids. Please upgrade your account.');
