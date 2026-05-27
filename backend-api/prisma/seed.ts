@@ -178,20 +178,6 @@ async function main() {
     },
   });
 
-  const buyer1 = await prisma.user.upsert({
-    where: { email: 'buyer@gmail.com' },
-    update: {},
-    create: {
-      email: 'buyer@gmail.com',
-      passwordHash,
-      firstName: 'Alice',
-      lastName: 'Buyer',
-      status: UserStatus.ACTIVE,
-      roleId: buyerRole.id,
-      isEmailVerified: true,
-    },
-  });
-
   // 3. Create Categories and Attributes
   console.log('Seeding categories and attributes...');
   for (const cat of seedCategories) {
@@ -417,12 +403,12 @@ async function main() {
           }
         });
 
-        // 6. Select Auction Type
+        // 6. Select Auction Type — cycles: Bid Only → Buy Now Only → Bid & Buy
         const auctionTypes = [AuctionType.BID_ONLY, AuctionType.BUY_NOW_ONLY, AuctionType.BID_AND_BUY];
         const type = auctionTypes[j % auctionTypes.length];
 
         let startingBid = item.price * 0.8;
-        let buyItNowPrice = null;
+        let buyItNowPrice: number | null = null;
 
         if (type === AuctionType.BUY_NOW_ONLY) {
           startingBid = item.price;
@@ -433,10 +419,10 @@ async function main() {
         }
 
         const endTime = new Date();
-        endTime.setDate(endTime.getDate() + (3 + (j % 5))); // 3 to 7 days end time
+        endTime.setDate(endTime.getDate() + (3 + (j % 5))); // 3 to 7 days from now
 
-        // 7. Create Auction
-        const auction = await prisma.auction.create({
+        // 7. Create Auction (no bids seeded)
+        await prisma.auction.create({
           data: {
             productId: product.id,
             status: AuctionStatus.ACTIVE,
@@ -450,28 +436,6 @@ async function main() {
             bidCount: 0
           }
         });
-
-        // 8. Add a bid on some auctions to show activity
-        if (type !== AuctionType.BUY_NOW_ONLY && j % 2 === 0) {
-          const bidAmount = startingBid + (item.price > 10000 ? 500 : 100);
-          await prisma.bid.create({
-            data: {
-              userId: buyer1.id,
-              auctionId: auction.id,
-              amount: bidAmount,
-              status: 'VALID',
-              isHighestBid: true
-            }
-          });
-          await prisma.auction.update({
-            where: { id: auction.id },
-            data: {
-              currentBid: bidAmount,
-              bidCount: 1,
-              highestBidderId: buyer1.id
-            }
-          });
-        }
       }
     }
   }
