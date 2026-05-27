@@ -211,6 +211,7 @@ export class AuctionsService {
           },
         },
         bids: {
+          where: { status: { not: 'RETRACTED' } },
           orderBy: { amount: 'desc' },
           include: { 
             user: {

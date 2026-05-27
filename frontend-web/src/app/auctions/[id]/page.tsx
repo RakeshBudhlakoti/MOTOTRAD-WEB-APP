@@ -223,8 +223,8 @@ export default function AuctionDetailPage() {
   const isWinner = isAuthenticated && user?.id === auction.highestBidderId;
   const hasOrder = !!orderData;
 
-  // Merge historical bids with live ones
-  const historicalBids = auction.bids || [];
+  // Merge historical bids with live ones (exclude retracted bids)
+  const historicalBids = (auction.bids || []).filter((b: any) => b.status !== 'RETRACTED');
   
   // Start with rich historical bids (which have complete database records, user details, and avatars)
   const mergedBids = [...historicalBids];
