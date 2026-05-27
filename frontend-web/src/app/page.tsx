@@ -57,25 +57,63 @@ export default function HomePage() {
 
   return (
     <main className="flex-1 w-full animate-fade-in overflow-x-hidden">
-      {/* Hero Section */}
-      <header className="relative min-h-[30vh] md:min-h-[45vh] lg:min-h-[55vh] flex items-center justify-center text-center overflow-hidden">
-        {/* Grayscale Background Image */}
+      {/* Hero Section — Light & Airy with Parallax */}
+      <header className="relative min-h-[35vh] md:min-h-[50vh] lg:min-h-[60vh] flex items-center justify-center text-center overflow-hidden">
+        {/* Parallax Background Image — Light wash */}
         <div 
-          className="absolute inset-0 bg-[url('https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center bg-fixed grayscale brightness-[0.32] contrast-[1.05]"
-          style={{ transform: 'scale(1.01)' }}
+          className="absolute inset-0"
+          style={{ 
+            backgroundImage: `url('https://images.pexels.com/photos/1191146/pexels-photo-1191146.jpeg?auto=compress&cs=tinysrgb&w=1920')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            backgroundRepeat: 'no-repeat',
+          }}
         />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/35 z-10" />
- 
-        <div className="relative z-20 px-6 max-w-[1000px] mx-auto py-8 md:py-16 lg:py-0 w-full">
-          <h1 className="text-[2.8rem] md:text-[4rem] lg:text-[5.5rem] font-black tracking-tight mb-6 text-white drop-shadow-xl leading-none uppercase select-none">
-            BUY, RIDE OR REVIVE
-          </h1>
-          <p className="hidden md:block text-[0.95rem] md:text-[1.1rem] lg:text-[1.25rem] text-white/80 max-w-[700px] mx-auto mb-10 lg:mb-12 font-medium tracking-normal leading-relaxed">
+        {/* Light frosted overlay */}
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px]" />
+        {/* Subtle gradient accent */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/90" />
+        {/* Decorative blurred blobs */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative z-20 px-6 max-w-[1000px] mx-auto py-10 md:py-20 lg:py-0 w-full">
+          {/* Accent Badge */}
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block text-[10px] md:text-[11px] font-black text-primary uppercase tracking-[3px] bg-primary/5 px-5 py-2 rounded-full border border-primary/10 mb-6 md:mb-8"
+          >
+            <i className="fas fa-gem mr-2 text-[9px]"></i> Premium Auction Marketplace
+          </motion.span>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-[2.6rem] md:text-[3.8rem] lg:text-[5rem] font-black tracking-tight mb-5 md:mb-6 leading-[1.05] uppercase select-none"
+          >
+            <span className="text-[#0F172A]">BUY, </span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-rose-500">RIDE</span>
+            <span className="text-[#0F172A]"> OR </span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">REVIVE</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden md:block text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] text-[#475569] max-w-[650px] mx-auto mb-10 lg:mb-12 font-medium tracking-normal leading-relaxed"
+          >
             Discover and bid on the world's most coveted vintage cars, luxury timepieces, and premium motorcycles.
-          </p>
+          </motion.p>
           
-          <form 
+          <motion.form 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             onSubmit={(e) => {
               e.preventDefault();
               const query = (e.currentTarget.elements.namedItem('search') as HTMLInputElement).value;
@@ -83,21 +121,40 @@ export default function HomePage() {
                 window.location.href = `/live-auctions?search=${encodeURIComponent(query)}`;
               }
             }}
-            className="relative max-w-[650px] mx-auto w-full group shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden mt-8"
+            className="relative max-w-[600px] mx-auto w-full group"
           >
             <input 
               type="text" 
               name="search"
               placeholder="Search products..." 
-              className="w-full bg-white pl-8 pr-16 py-4 lg:py-5 rounded-2xl outline-none text-sm lg:text-base text-[#111] font-bold border-none transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] focus:shadow-[0_20px_50px_rgba(0,0,0,0.25)]" 
+              className="w-full bg-white/90 backdrop-blur-md pl-8 pr-16 py-4 lg:py-5 rounded-2xl outline-none text-sm lg:text-base text-[#111] font-bold border border-[#E2E8F0] transition-all shadow-[0_8px_30px_rgba(0,0,0,0.06)] focus:shadow-[0_12px_40px_rgba(0,0,0,0.1)] focus:border-primary/20 focus:bg-white" 
             />
             <button 
               type="submit" 
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-transparent border-none text-primary p-3 cursor-pointer text-lg lg:text-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white w-10 h-10 lg:w-11 lg:h-11 rounded-xl cursor-pointer text-sm transition-all duration-300 hover:bg-primary-hover hover:scale-105 active:scale-95 flex items-center justify-center shadow-md"
             >
-              <i className="fas fa-search text-primary"></i>
+              <i className="fas fa-search"></i>
             </button>
-          </form>
+          </motion.form>
+
+          {/* Trust Indicators */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-wrap items-center justify-center gap-4 md:gap-8 mt-8 md:mt-10"
+          >
+            {[
+              { icon: 'fa-shield-halved', text: 'Verified Sellers' },
+              { icon: 'fa-lock', text: 'Secure Bidding' },
+              { icon: 'fa-award', text: 'Certified Items' },
+            ].map((item, idx) => (
+              <span key={idx} className="flex items-center gap-2 text-[0.72rem] md:text-[0.78rem] text-[#64748B] font-bold uppercase tracking-wider">
+                <i className={`fas ${item.icon} text-primary/50 text-[0.7rem]`}></i>
+                {item.text}
+              </span>
+            ))}
+          </motion.div>
         </div>
       </header>
 
