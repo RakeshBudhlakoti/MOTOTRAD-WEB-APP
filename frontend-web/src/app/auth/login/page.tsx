@@ -134,14 +134,14 @@ function LoginContent() {
 
             <form onSubmit={handleLogin} className="flex flex-col gap-8">
                 <div className="flex flex-col gap-3">
-                    <label className="text-[0.7rem] font-black text-[#111] uppercase tracking-[2px]">Email Address <span className="text-primary">*</span></label>
+                    <label className="text-[0.7rem] font-black text-[#111] uppercase tracking-[2px]">Email or Username <span className="text-primary">*</span></label>
                     <input 
-                        type="email" 
+                        type="text" 
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        placeholder="Enter your email" 
+                        placeholder="Enter your email or username" 
                         className="w-full bg-[#F8FAFC] border-2 border-transparent rounded-xl p-5 outline-none focus:bg-white focus:border-primary/20 transition-all font-bold text-[#111] text-[0.95rem]" 
                     />
                 </div>
