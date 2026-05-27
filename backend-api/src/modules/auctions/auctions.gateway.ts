@@ -370,6 +370,7 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
         });
         const sellerUserId = productWithSeller?.seller?.userId;
         const buyerUsername = userData.username || userData.email || 'bidder';
+        const bidderName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || buyerUsername;
 
         // A. Notify All Admins and Super Admins (System Alert Logs)
         const admins = await this.prisma.user.findMany({
@@ -426,6 +427,21 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
             );
           }
         }
+
+        // D. Send Bid Confirmation email to the BIDDER
+        this.emailService.sendBidConfirmation(
+          userData.email,
+          result.updatedAuction.product.title,
+          amount
+        ).catch(e => this.logger.error('Failed to send bid confirmation email', e));
+
+        // E. Send Admin New Bid email notification
+        this.emailService.sendAdminNewBidNotification(
+          result.updatedAuction.product.title,
+          amount,
+          bidderName
+        ).catch(e => this.logger.error('Failed to send admin new bid email', e));
+
       } catch (notiError) {
         this.logger.error('Failed to process bid in-app notifications/emails', notiError.stack || notiError.message);
       }
