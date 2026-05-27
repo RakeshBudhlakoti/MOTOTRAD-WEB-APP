@@ -242,7 +242,7 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
 
         // Determine if we should disable Buy Now due to this first bid
         let buyNowDisabledUpdated = false;
-        if (auction.bidCount === 0) {
+        if (auction.bidCount === 0 && auction.buyItNowPrice) {
           const allowAfterBidsSetting = await tx.setting.findUnique({
             where: { key: 'ALLOW_BUY_NOW_AFTER_BIDS' }
           });
@@ -332,6 +332,8 @@ export class AuctionsGateway implements OnGatewayConnection, OnGatewayDisconnect
 
       // 4. Broadcast Success
       this.server.to(`auction:${auctionId}`).emit('bid_placed', {
+        id: result.newBid.id,
+        userId: user.sub,
         amount: amount,
         userName: `${userData.firstName} ${userData.lastName[0]}.`,
         timestamp: new Date(),

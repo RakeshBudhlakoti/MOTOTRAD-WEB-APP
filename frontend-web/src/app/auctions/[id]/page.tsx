@@ -87,6 +87,8 @@ export default function AuctionDetailPage() {
        dispatch(setLiveBid({ 
          auctionId, 
          bid: {
+           id: data.id,
+           userId: data.userId,
            amount: data.amount,
            user: { firstName: data.userName.split(' ')[0], lastName: data.userName.split(' ')[1] || '' },
            createdAt: data.timestamp,
@@ -550,7 +552,7 @@ export default function AuctionDetailPage() {
                                     finalBids.map((bid: any, i: number) => {
                                         const isWinner = isSold && auction.highestBidderId === bid.userId && i === 0;
                                         return (
-                                            <tr key={bid.id} className={`border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors ${isWinner ? 'bg-green-50/30' : ''}`}>
+                                            <tr key={bid.id || `bid-${i}`} className={`border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors ${isWinner ? 'bg-green-50/30' : ''}`}>
                                                 <td className="p-6 font-bold text-[#64748B] text-[0.9rem]">{i + 1 < 10 ? `0${i + 1}` : i + 1}</td>
                                                 <td className="p-6">
                                                     <div className="flex items-center gap-4">
