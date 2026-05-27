@@ -20,12 +20,16 @@ import {
   ChevronRight,
   HelpCircle,
   Upload,
-  Loader2
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import { Card } from '@/components/common/Card';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import Swal from 'sweetalert2';
 
 const TABS = [
   { id: 'website', label: 'Website Settings', icon: Globe },
@@ -37,11 +41,109 @@ const TABS = [
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
+
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentUserRole = currentUser?.role?.name?.toUpperCase();
+  const isSuperAdmin = currentUserRole === 'SUPER_ADMIN' || currentUserRole === 'SUPERADMIN' || currentUserRole?.includes('SUPER');
+
+  const tabs = [
+    { id: 'website', label: 'Website Settings', icon: Globe },
+    { id: 'smtp', label: 'SMTP / Email', icon: Mail },
+    { id: 'commission', label: 'Global Commission', icon: DollarSign },
+    { id: 'paypal', label: 'PayPal Gateway', icon: CreditCard },
+    { id: 'auction', label: 'Auction Logic', icon: Gavel },
+  ];
+
+  if (isSuperAdmin) {
+    tabs.push({ id: 'database', label: 'Clean Database', icon: Database });
+  }
+
   const [activeTab, setActiveTab] = useState('website');
   const [activeSubTab, setActiveSubTab] = useState('general');
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+  const [deletedSummary, setDeletedSummary] = useState<Record<string, number> | null>(null);
+
+  const { data: dbStats, isLoading: isLoadingStats, refetch: refetchStats } = useQuery({
+    queryKey: ['admin-db-stats'],
+    queryFn: () => settingsService.get('db-stats'),
+    enabled: activeTab === 'database' && isSuperAdmin,
+  });
+
+  const cleanMutation = useMutation({
+    mutationFn: () => settingsService.post('db-clean', {}),
+    onSuccess: (data: any) => {
+      setDeletedSummary(data.deleted || {});
+      queryClient.invalidateQueries({ queryKey: ['admin-db-stats'] });
+      toast.success('Database cleaned successfully!');
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Failed to clean database');
+    }
+  });
+
+  const formatTableKey = (key: string) => {
+    const mappings: Record<string, string> = {
+      trackingEvents: 'Tracking Events',
+      shippings: 'Shippings & Deliveries',
+      payments: 'Payments & Transactions',
+      orders: 'Customer Orders',
+      bids: 'Bids Placed',
+      auctionExtensions: 'Auction Extensions',
+      auctions: 'Auctions Created',
+      productMedia: 'Product Media Files',
+      productAttributeValues: 'Product Custom Attributes',
+      products: 'Products Registered',
+      watchlists: 'Watchlists & Favorites',
+      sellerKycs: 'Seller KYC Uploads',
+      sellerProfiles: 'Seller Profile Records',
+      subscriptionPayments: 'Subscription Payments',
+      subscriptions: 'User Subscriptions',
+      notifications: 'Alerts & Notifications',
+      reports: 'Inappropriate Content Reports',
+      contactInquiries: 'Support Ticket Inquiries',
+      auditLogs: 'Audit Activity Logs (Excl. Active)',
+      users: 'Users (Excluding Superadmins)',
+      baskets: 'Baskets / Buckets',
+      categoryAttributes: 'Category Attributes',
+      categories: 'Categories & Subcategories',
+    };
+    return mappings[key] || key.replace(/([A-Z])/g, ' $1');
+  };
+
+  const handleTriggerWipe = () => {
+    Swal.fire({
+      title: 'CRITICAL ACTION REQUIRED',
+      html: `
+        <div class="text-left space-y-3 font-sans">
+          <p class="text-xs font-black uppercase text-red-600 tracking-wider">Warning: This action is permanent and completely irreversible!</p>
+          <p class="text-[11px] leading-relaxed text-slate-500 font-medium">This will permanently delete all auctions, bids, products, categories, non-superadmin user accounts, payments, and history logs.</p>
+          <p class="text-[11px] leading-relaxed text-slate-700 font-bold">Please type <span class="bg-slate-100 text-red-600 border border-slate-200 px-1.5 py-0.5 rounded font-mono">CLEAN</span> in the input box below to authorize the database wipe:</p>
+        </div>
+      `,
+      input: 'text',
+      inputPlaceholder: 'CLEAN',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'AUTHORIZE DATABASE WIPE',
+      cancelButtonText: 'CANCEL',
+      customClass: {
+        confirmButton: 'uppercase font-black text-xs tracking-widest px-4 py-2.5 rounded-sm',
+        cancelButton: 'uppercase font-black text-xs tracking-widest px-4 py-2.5 rounded-sm',
+      },
+      inputValidator: (value) => {
+        if (value !== 'CLEAN') {
+          return 'You must type CLEAN to proceed!';
+        }
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value === 'CLEAN') {
+        cleanMutation.mutate();
+      }
+    });
+  };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     const file = e.target.files?.[0];
@@ -125,7 +227,7 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Vertical Sidebar Tabs */}
           <div className="lg:col-span-1 space-y-1">
-            {TABS.map(tab => (
+            {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -152,18 +254,108 @@ export default function SettingsPage() {
 
           {/* Settings Forms */}
           <div className="lg:col-span-3">
-            <form onSubmit={onSave}>
-               <Card 
-                 title={`${TABS.find(t=>t.id===activeTab)?.label} Configuration`}
-                 footer={
-                   <div className="flex justify-end">
-                     <Button type="submit" className="px-8 py-2.5 uppercase tracking-[2px] text-[10px] font-black" isLoading={updateMutation.isPending}>
-                        <Save size={14} className="mr-2" /> Save Global Settings
-                     </Button>
-                   </div>
-                 }
-               >
-                 <div className="min-h-[400px]">
+            {activeTab === 'database' ? (
+              <Card title="Database Maintenance">
+                <div className="min-h-[400px]">
+                  {deletedSummary ? (
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg flex items-start gap-3">
+                        <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="text-xs font-black uppercase tracking-widest">Database Clean Completed Successfully</h4>
+                          <p className="text-[10px] mt-1 font-medium text-emerald-600 uppercase">The database was wiped and reset. All transactional records have been removed.</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-slate-100 rounded-lg overflow-hidden">
+                        <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Deleted Records Summary</span>
+                          <span className="text-[9px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">Audit Log Updated</span>
+                        </div>
+                        <div className="divide-y divide-slate-100">
+                          {Object.entries(deletedSummary).map(([key, count]) => (
+                            <div key={key} className="px-4 py-3 flex items-center justify-between text-xs">
+                              <span className="font-bold text-slate-700 uppercase tracking-wider">{formatTableKey(key)}</span>
+                              <span className="font-black text-slate-900 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-sm">{count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Button type="button" onClick={() => { setDeletedSummary(null); refetchStats(); }} className="px-6 py-2 uppercase tracking-widest text-xs font-black">
+                          Acknowledge & Refresh
+                        </Button>
+                      </div>
+                    </div>
+                  ) : isLoadingStats ? (
+                    <div className="py-20 text-center text-xs font-bold uppercase tracking-widest text-slate-400">
+                      Scanning database statistics...
+                    </div>
+                  ) : (
+                    <div className="space-y-6 animate-fade-in">
+                      {/* Warning Card */}
+                      <div className="p-5 bg-amber-50 border border-amber-200/80 rounded-lg text-amber-900 flex items-start gap-4">
+                        <AlertCircle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-black uppercase tracking-widest">Crucial Action Warning</h4>
+                          <p className="text-[10px] leading-relaxed font-medium text-amber-700 uppercase">
+                            Wiping the database is an irreversible administrative action. All products, categories, bids, auctions, orders, kycs, and transactional history will be permanently deleted.
+                          </p>
+                          <p className="text-[10px] leading-relaxed font-bold text-amber-800 uppercase mt-2">
+                            ✓ Preserved: All Superadministrator accounts, role permissions configuration, and global website setting values will not be deleted.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Stats Grid */}
+                      <div className="bg-white border border-slate-200/80 rounded-lg overflow-hidden">
+                        <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Database Record Census</span>
+                          <button type="button" onClick={() => refetchStats()} className="text-[9px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-widest">
+                            Refresh Counts
+                          </button>
+                        </div>
+                        <div className="divide-y divide-slate-100">
+                          {dbStats && Object.entries(dbStats).map(([key, count]) => (
+                            <div key={key} className="px-4 py-3 flex items-center justify-between text-xs">
+                              <span className="font-bold text-slate-700 uppercase tracking-wider">{formatTableKey(key)}</span>
+                              <span className={`font-black px-2.5 py-0.5 rounded-sm ${count === 0 ? 'text-slate-400 bg-slate-50' : 'text-blue-700 bg-blue-50 border border-blue-100'}`}>
+                                {count as number}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Clean Trigger Button */}
+                      <div className="flex justify-end pt-4 border-t border-slate-100">
+                        <Button 
+                          type="button" 
+                          onClick={handleTriggerWipe} 
+                          className="bg-red-600 hover:bg-red-700 border-red-700 text-white px-8 py-3 uppercase tracking-widest text-xs font-black"
+                          isLoading={cleanMutation.isPending}
+                        >
+                          Wipe Database Data
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            ) : (
+              <form onSubmit={onSave}>
+                 <Card 
+                   title={`${tabs.find(t=>t.id===activeTab)?.label} Configuration`}
+                   footer={
+                     <div className="flex justify-end">
+                       <Button type="submit" className="px-8 py-2.5 uppercase tracking-[2px] text-[10px] font-black" isLoading={updateMutation.isPending}>
+                          <Save size={14} className="mr-2" /> Save Global Settings
+                       </Button>
+                     </div>
+                   }
+                 >
+                   <div className="min-h-[400px]">
                       {activeTab === 'website' && (
                         <div className="space-y-6 animate-fade-in">
                           {/* Sub Tabs Pill Header */}
@@ -491,9 +683,10 @@ export default function SettingsPage() {
                         </div>
                       </div>
                     )}
-                 </div>
+                  </div>
                </Card>
             </form>
+            )}
           </div>
         </div>
       </div>

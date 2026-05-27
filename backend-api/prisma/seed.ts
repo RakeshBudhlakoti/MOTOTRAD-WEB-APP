@@ -288,14 +288,7 @@ async function main() {
         items: [
           { title: '1967 Ford Mustang Fastback', price: 65000, desc: 'A beautifully restored 1967 Ford Mustang Fastback in Highland Green. Original V8 engine.' },
           { title: '1973 Porsche 911 Carrera RS', price: 120000, desc: 'Original Carrera RS with matching numbers. Light restoration completed recently in Grand Prix White.' },
-          { title: '1963 Chevrolet Corvette Split-Window', price: 95000, desc: 'Rare Split-Window coupe. 327/340hp V8, 4-speed manual transmission. Riverside Red over black.' },
-          { title: '1971 Jaguar E-Type Series 3 V12', price: 80000, desc: 'Signal Red OTS. Beautiful V12 engine, manual transmission. Original interior and wire wheels.' },
-          { title: '1969 Dodge Charger R/T', price: 85000, desc: 'Matching numbers 440 Magnum V8. Triple black color combination, pristine condition.' },
-          { title: '1985 BMW M3 E30', price: 75000, desc: 'First-generation E30 M3 in Henna Red. Original S14 engine, pristine condition.' },
-          { title: '1957 Mercedes-Benz 300SL Roadster', price: 350000, desc: 'Ultra-rare classic Roadster. Fully documented provenance and concours-level restoration.' },
-          { title: '1970 Plymouth Superbird', price: 150000, desc: '440 Six-Pack V8, automatic transmission. TorRed exterior, legendary wing and nose cone.' },
-          { title: '1974 Alfa Romeo GTV 2000', price: 45000, desc: 'Pristine Italian sports coupe. Alfa Red, 2.0L twin-cam engine, manual gearbox.' },
-          { title: '1988 Ferrari Testarossa', price: 140000, desc: 'Iconic 80s supercar in Rosso Corsa. Flat-12 engine, gated 5-speed shifter. Only 18,000 miles.' }
+          { title: '1963 Chevrolet Corvette Split-Window', price: 95000, desc: 'Rare Split-Window coupe. 327/340hp V8, 4-speed manual transmission. Riverside Red over black.' }
         ]
       },
       {
@@ -303,14 +296,7 @@ async function main() {
         items: [
           { title: '1932 Ford Roadster Hot Rod', price: 55000, desc: 'Pristine steel-body hot rod. Flathead V8 engine, custom brown leather interior.' },
           { title: '1948 Chrysler Town & Country', price: 85000, desc: 'Historic wooden-body convertible. Fully restored ash and mahogany wood paneling.' },
-          { title: '1955 Chevrolet Bel Air Nomad', price: 70000, desc: 'Classic two-door station wagon. 265 V8, two-tone turquoise and white paint.' },
-          { title: '1928 Cadillac Series 341-A', price: 110000, desc: 'Fisher-bodied Town Sedan. Dual side-mount spares, original wood-spoke wheels.' },
-          { title: '1937 Cord 812 Supercharged', price: 165000, desc: 'Advanced supercharged sedan. Front-wheel drive, wrap-around grill, hideaway headlights.' },
-          { title: '1953 Hudson Hornet Club Coupe', price: 60000, desc: 'Twin-H Power inline-6 engine. Historic NASCAR heritage, step-down chassis design.' },
-          { title: '1941 Lincoln Continental Coupe', price: 48000, desc: 'V12 engine, pristine dark blue paint. Classic spare tire mounted on trunk.' },
-          { title: '1931 Duesenberg Model J', price: 850000, desc: 'Peerless American luxury coachwork. Straight-8 engine. Museum-quality preservation.' },
-          { title: '1959 Cadillac Eldorado Biarritz', price: 180000, desc: 'Massive tail fins, dual bullet taillights. Tri-power 390 V8, bucket seat interior.' },
-          { title: '1936 Auburn 852 Speedster', price: 220000, desc: 'Boattail Speedster. Supercharged engine, chrome external exhaust pipes.' }
+          { title: '1955 Chevrolet Bel Air Nomad', price: 70000, desc: 'Classic two-door station wagon. 265 V8, two-tone turquoise and white paint.' }
         ]
       },
       {
@@ -318,14 +304,7 @@ async function main() {
         items: [
           { title: 'Rolex Submariner Ref 1680', price: 28000, desc: 'Vintage "Red Submariner" with single red line text. Mark IV dial, original folded link bracelet.' },
           { title: 'Patek Philippe Nautilus 5711', price: 115000, desc: 'Legendary Gérald Genta design. Blue-black textured dial, steel integrated bracelet.' },
-          { title: 'Audemars Piguet Royal Oak', price: 85000, desc: 'Extra-Thin "Jumbo" Ref 15202ST. Petite Tapisserie blue dial, automatic movement.' },
-          { title: 'Omega Speedmaster Moonwatch', price: 12000, desc: 'Vintage "Pre-Moon" 1969 Ref 145.022. Calibre 861, step dial, dot-over-ninety bezel.' },
-          { title: 'Vacheron Constantin Overseas', price: 34000, desc: 'Chronograph steel model. Blue lacquer dial, quick-change bracelet system.' },
-          { title: 'Rolex Daytona Ref 116500LN', price: 31000, desc: 'Cerachrom black ceramic bezel, white "Panda" dial. Oystersteel bracelet.' },
-          { title: 'Richard Mille RM 011-FM', price: 185000, desc: 'Felipe Massa Flyback Chronograph. Tonneau titanium case, skeletonized dial.' },
-          { title: 'Cartier Santos-Dumont Platinum', price: 18000, desc: 'Limited edition platinum case. Red ruby cabochon crown, manual winding.' },
-          { title: 'Jaeger-LeCoultre Reverso', price: 11500, desc: 'Tribute Duoface. Front silver art deco dial, back black dial for second timezone.' },
-          { title: 'A. Lange & Söhne Lange 1', price: 38000, desc: 'Asymmetric solid silver dial. Outsize date display, solid rose gold case.' }
+          { title: 'Audemars Piguet Royal Oak', price: 85000, desc: 'Extra-Thin "Jumbo" Ref 15202ST. Petite Tapisserie blue dial, automatic movement.' }
         ]
       },
       {
@@ -333,14 +312,7 @@ async function main() {
         items: [
           { title: '3.5ct Colombian Emerald', price: 15000, desc: 'Certified natural emerald from Muzo mines. Deep forest green color, minor oil treatment.' },
           { title: '5.2ct Ceylon Blue Sapphire', price: 22000, desc: 'Unheated royal blue sapphire from Sri Lanka. Cushion cut, exceptional transparency.' },
-          { title: '2.1ct Burma Ruby', price: 35000, desc: 'Vivid Pigeon Blood red Ruby from Mogok. Unheated, GIA certified collector stone.' },
-          { title: '8.4ct Natural Tanzanite', price: 6500, desc: 'Trillion cut tanzanite. Deep violet-blue color with strong red flash pleochroism.' },
-          { title: '1.5ct Pink Diamond', price: 95000, desc: 'GIA certified Fancy Intense Pink diamond. Radiant cut, VS2 clarity, investment grade.' },
-          { title: '12.5ct Australian Black Opal', price: 18000, desc: 'Lightning Ridge solid black opal. Full spectrum fire, red-green dominant pinfire pattern.' },
-          { title: '4.8ct Paraiba Tourmaline', price: 45000, desc: 'Neon electric blue tourmaline from Mozambique. Heated, oval cut, dazzling brilliance.' },
-          { title: '15mm South Sea Pearl Strand', price: 14000, desc: 'Golden South Sea cultured pearls. High luster, round shapes, 18K yellow gold clasp.' },
-          { title: '6.1ct Imperial Topaz', price: 8000, desc: 'Natural golden-orange topaz with peach overtones. Custom scissor cut from Ouro Preto.' },
-          { title: '10.2ct Tsavorite Garnet', price: 11000, desc: 'Deep vibrant green grossular garnet from Kenya. Oval cut, excellent eye-clean clarity.' }
+          { title: '2.1ct Burma Ruby', price: 35000, desc: 'Vivid Pigeon Blood red Ruby from Mogok. Unheated, GIA certified collector stone.' }
         ]
       },
       {
@@ -348,14 +320,7 @@ async function main() {
         items: [
           { title: '2023 Ducati Panigale V4 S', price: 32000, desc: 'Flagship Italian superbike. Desmosedici Stradale engine, Öhlins electronic suspension.' },
           { title: '1974 Ducati 750 Super Sport', price: 78000, desc: 'Ultra-rare round case desmo. Classic silver-blue fairing, historical collectors bike.' },
-          { title: '1954 Vincent Black Shadow', price: 125000, desc: 'Legendary Series C. One of the fastest bikes of its era, pristine mechanical condition.' },
-          { title: '1969 Triumph Bonneville T120R', price: 14000, desc: 'Classic parallel-twin British motorcycle. Fully restored Tangerine/Olympic Flame paint.' },
-          { title: '2022 HD CVO Road Glide', price: 42000, desc: 'Custom Vehicle Operations bagger. 117ci engine, premium paint and audio system.' },
-          { title: '1972 Kawasaki H2 Mach IV 750', price: 19000, desc: 'Classic 2-stroke triple. Restored to stock specifications, original candy blue paint.' },
-          { title: '2021 BMW R18 Custom Bobber', price: 24000, desc: 'Custom builder series. 1802cc boxer engine, solo seat, custom blacked-out exhausts.' },
-          { title: '1982 Honda CBX1000 Six', price: 16500, desc: '24-valve inline-six cylinder superbike. Original exhausts, runs and rides beautifully.' },
-          { title: '2023 MV Agusta Brutale 1000', price: 36000, desc: 'Ultra-premium naked bike. 208 horsepower, titanium components, carbon fiber fairings.' },
-          { title: '1939 Indian Four Model 439', price: 85000, desc: 'Classic four-cylinder American motorcycle. Beautiful skirted fenders, historic red paint.' }
+          { title: '1954 Vincent Black Shadow', price: 125000, desc: 'Legendary Series C. One of the fastest bikes of its era, pristine mechanical condition.' }
         ]
       },
       {
@@ -363,29 +328,15 @@ async function main() {
         items: [
           { title: 'Persian Silk Isfahan Rug 9x12', price: 12500, desc: '100% natural silk hand-knotted rug. Exquisite central medallion design, 800+ KPSI.' },
           { title: '19th Century Carved Oak Chest', price: 3200, desc: 'French antique storage chest. Hand-carved mythological reliefs, original brass locks.' },
-          { title: 'Murano Hand-Blown Chandelier', price: 5800, desc: 'Venetian art glass chandelier. 12 arms, multi-colored floral glass ornaments.' },
-          { title: 'Meiji Period Bronze Eagle', price: 9500, desc: 'Japanese antique sculpture. Life-sized wingspan detail, signed by the master artist.' },
-          { title: 'Damascus Steel Collector Sword', price: 2200, desc: 'Custom hand-forged 32-inch sword. 512 layers of folded steel, mammoth ivory handle.' },
-          { title: 'French Hand-Painted Porcelain Vase', price: 4500, desc: 'Sèvres style cobalt blue urn. Hand-painted romantic garden scenes, gold leaf mounts.' },
-          { title: 'Balinese Carved Teak Bench', price: 1800, desc: 'Solid teak garden bench. Intricate floral and wildlife hand-carvings on backrest.' },
-          { title: 'Tibetan Singing Bowl Set', price: 1200, desc: 'Set of 7 antique hand-hammered bronze singing bowls, calibrated for musical chakras.' },
-          { title: 'Moroccan Woven Wool Berber rug', price: 2400, desc: 'Authentic Beni Ourain tribal rug. Shag wool, traditional black diamond pattern.' },
-          { title: 'Indian Inlaid Marble Jewelry Box', price: 900, desc: 'White Makrana marble box, hand-inlaid with lapis lazuli, malachite, and carnelian.' }
+          { title: 'Murano Hand-Blown Chandelier', price: 5800, desc: 'Venetian art glass chandelier. 12 arms, multi-colored floral glass ornaments.' }
         ]
       },
       {
-        slug: 'electrical-appliances',
+        slug: 'smart-appliances',
         items: [
           { title: 'La Marzocco Linea Mini', price: 5900, desc: 'Commercial-grade dual-boiler home espresso machine. Custom walnut wood accents.' },
           { title: 'Sub-Zero Pro 48 Refrigerator', price: 16500, desc: 'Dual refrigeration system, glass door. 100% stainless steel interior and exterior.' },
-          { title: 'Miele Built-In Coffee System', price: 4800, desc: 'Plumbed water model. CupSensor automatic height adjuster, M Touch controls.' },
-          { title: 'Thermomix TM6 Cooker Bundle', price: 1500, desc: 'All-in-one smart kitchen appliance. Built-in WiFi, guided cooking touchscreen.' },
-          { title: 'Dyson 360 Vis Nav Robot', price: 1200, desc: 'High suction robotic vacuum cleaner. Piezo sensor particle detection.' },
-          { title: 'Gaggenau Combi-Steam Oven', price: 8200, desc: '400 Series built-in steam oven. Plumbed water supply, automatic cleaning.' },
-          { title: 'B&O Beosound Theatre Soundbar', price: 9500, desc: 'High-end Dolby Atmos soundbar. Solid oak wood fret, aluminum frame.' },
-          { title: 'Wine Cellar 300-Bottle Cabinet', price: 3800, desc: 'Dual-zone cooling cabinet. UV-protected glass, rolling sapele wood shelves.' },
-          { title: 'Smeg D&G Retro Toaster', price: 850, desc: '"Sicily is my Love" limited edition. Hand-decorated Italian folk art patterns.' },
-          { title: 'Breville Oracle Touch Espresso', price: 2800, desc: 'Automatic grinding, tamping, and milk texturing. Color touchscreen control.' }
+          { title: 'Miele Built-In Coffee System', price: 4800, desc: 'Plumbed water model. CupSensor automatic height adjuster, M Touch controls.' }
         ]
       }
     ];

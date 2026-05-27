@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { RedisService } from '@/modules/redis/redis.service';
 
@@ -144,6 +144,140 @@ export class SettingsService {
       'ALLOW_BUY_NOW_AFTER_BIDS'
     ];
     return publicKeys.includes(key);
+  }
+
+  async getDbStats() {
+    const superAdminRole = await this.prisma.role.findFirst({
+      where: { name: 'SUPER_ADMIN' },
+    });
+    if (!superAdminRole) {
+      throw new NotFoundException('SUPER_ADMIN role not found in the database. Aborting query.');
+    }
+    const superAdminRoleId = superAdminRole.id;
+
+    return {
+      trackingEvents: await this.prisma.trackingEvent.count(),
+      shippings: await this.prisma.shipping.count(),
+      payments: await this.prisma.payment.count(),
+      orders: await this.prisma.order.count(),
+      bids: await this.prisma.bid.count(),
+      auctionExtensions: await this.prisma.auctionExtension.count(),
+      auctions: await this.prisma.auction.count(),
+      productMedia: await this.prisma.productMedia.count(),
+      productAttributeValues: await this.prisma.productAttributeValue.count(),
+      products: await this.prisma.product.count(),
+      watchlists: await this.prisma.watchlist.count(),
+      sellerKycs: await this.prisma.sellerKyc.count(),
+      sellerProfiles: await this.prisma.sellerProfile.count(),
+      subscriptionPayments: await this.prisma.subscriptionPayment.count(),
+      subscriptions: await this.prisma.subscription.count(),
+      notifications: await this.prisma.notification.count(),
+      reports: await this.prisma.report.count(),
+      contactInquiries: await this.prisma.contactInquiry.count(),
+      auditLogs: await this.prisma.auditLog.count(),
+      users: await this.prisma.user.count({
+        where: { roleId: { not: superAdminRoleId } },
+      }),
+      baskets: await this.prisma.basket.count(),
+      categoryAttributes: await this.prisma.categoryAttribute.count(),
+      categories: await this.prisma.category.count(),
+    };
+  }
+
+  async cleanDatabase(adminId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const superAdminRole = await tx.role.findFirst({
+        where: { name: 'SUPER_ADMIN' },
+      });
+      if (!superAdminRole) {
+        throw new ConflictException('SUPER_ADMIN role not found in the database. Aborting cleanup transaction to prevent data loss.');
+      }
+      const superAdminRoleId = superAdminRole.id;
+
+      // Get count of records in each table before deleting
+      const stats = {
+        trackingEvents: await tx.trackingEvent.count(),
+        shippings: await tx.shipping.count(),
+        payments: await tx.payment.count(),
+        orders: await tx.order.count(),
+        bids: await tx.bid.count(),
+        auctionExtensions: await tx.auctionExtension.count(),
+        auctions: await tx.auction.count(),
+        productMedia: await tx.productMedia.count(),
+        productAttributeValues: await tx.productAttributeValue.count(),
+        products: await tx.product.count(),
+        watchlists: await tx.watchlist.count(),
+        sellerKycs: await tx.sellerKyc.count(),
+        sellerProfiles: await tx.sellerProfile.count(),
+        subscriptionPayments: await tx.subscriptionPayment.count(),
+        subscriptions: await tx.subscription.count(),
+        notifications: await tx.notification.count(),
+        reports: await tx.report.count(),
+        contactInquiries: await tx.contactInquiry.count(),
+        auditLogs: await tx.auditLog.count({
+          where: { userId: { not: adminId } },
+        }),
+        users: await tx.user.count({
+          where: { roleId: { not: superAdminRoleId } },
+        }),
+        baskets: await tx.basket.count(),
+        categoryAttributes: await tx.categoryAttribute.count(),
+        categories: await tx.category.count(),
+      };
+
+      // Perform deletion in correct dependency order to satisfy foreign key constraints
+      await tx.trackingEvent.deleteMany({});
+      await tx.shipping.deleteMany({});
+      await tx.payment.deleteMany({});
+      await tx.order.deleteMany({});
+      await tx.bid.deleteMany({});
+      await tx.auctionExtension.deleteMany({});
+      await tx.auction.deleteMany({});
+      await tx.productMedia.deleteMany({});
+      await tx.productAttributeValue.deleteMany({});
+      await tx.product.deleteMany({});
+      await tx.watchlist.deleteMany({});
+      await tx.sellerKyc.deleteMany({});
+      await tx.sellerProfile.deleteMany({});
+      await tx.subscriptionPayment.deleteMany({});
+      await tx.subscription.deleteMany({});
+      await tx.notification.deleteMany({});
+      await tx.report.deleteMany({});
+      await tx.contactInquiry.deleteMany({});
+      
+      // Delete audit logs except this clean request if we want to trace it
+      await tx.auditLog.deleteMany({
+        where: { userId: { not: adminId } }
+      });
+
+      // Delete non-superadmin users
+      await tx.user.deleteMany({
+        where: { roleId: { not: superAdminRoleId } },
+      });
+
+      await tx.basket.deleteMany({});
+      await tx.categoryAttribute.deleteMany({});
+      await tx.category.deleteMany({});
+
+      // Create a new Audit Log for the cleanup action itself
+      await tx.auditLog.create({
+        data: {
+          userId: adminId,
+          action: 'CLEAN_DATABASE',
+          entityType: 'Database',
+          newValues: { stats },
+        },
+      });
+
+      // Invalidate Cache
+      await this.redisService.del(this.CACHE_KEY_PUBLIC).catch(() => {});
+      await this.redisService.del(this.CACHE_KEY_ALL).catch(() => {});
+
+      return {
+        success: true,
+        deleted: stats,
+      };
+    });
   }
 
   async getByKey(key: string) {

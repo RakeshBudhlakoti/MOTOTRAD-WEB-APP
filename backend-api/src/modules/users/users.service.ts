@@ -210,6 +210,10 @@ export class UsersService {
 
     const targetUserRole = targetUser.role?.name?.toUpperCase();
 
+    if (targetUserRole === 'SUPER_ADMIN' && (action === 'delete' || action === 'restore' || action.includes('status') || action.includes('deactivate'))) {
+      throw new ConflictException('Access Denied: Superadministrators cannot be deleted, deactivated, or restored under any conditions.');
+    }
+
     // 2. Super Admin can do anything except self-actions (which is blocked above)
     if (actorRole === 'SUPER_ADMIN' || actorRole === 'SUPERADMIN' || actorRole?.includes('SUPER')) {
       return;

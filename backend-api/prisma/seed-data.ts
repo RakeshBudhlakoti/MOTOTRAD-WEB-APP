@@ -377,8 +377,8 @@ export const seedCategories = [
   },
   {
     id: "8894ecf9-f7a8-4615-bc65-88a1ac2f13af",
-    name: "Electrical Appliances",
-    slug: "electrical-appliances",
+    name: "Smart Appliances",
+    slug: "smart-appliances",
     description: "High-end smart home kitchen electronics and tools.",
     imageUrl: "",
     isActive: true,
